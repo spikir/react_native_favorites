@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View, Text, Image, TouchableOpacity, FlatList, Button, Dimensions } from 'react-native';
+import { ScrollView, StyleSheet, View, Text, Image, TouchableOpacity, FlatList, Button, Dimensions, Linking  } from 'react-native';
 import { Font } from 'expo';
 import FontAwesome, { Icons } from "react-native-fontawesome";
 
@@ -17,6 +17,7 @@ export default class App extends React.Component {
 		this.loadDataList = this.loadDataList.bind(this);
 		this.addPage = this.addPage.bind(this);
 		this.minusPage = this.minusPage.bind(this);
+		this.onPressLearnMore = this.onPressLearnMore.bind(this);
 		this.count = 0;
 		this.loaded = false;
 	}
@@ -41,38 +42,43 @@ export default class App extends React.Component {
 	
 	loadDataList = () => {
 		return fetch('https://meningococcal-distr.000webhostapp.com/lists.php?page='+this.state.page)
-		  .then((response) => response.json())
-		  .then((responseJson) => {
-			this.setState({
-			  isLoading: false,
-			  dataSource: responseJson,
-			  count: 0
-			}, function() {
+			.then((response) => response.json())
+			.then((responseJson) => {
+				this.setState({
+					isLoading: false,
+					dataSource: responseJson,
+					count: 0
+				}, function() {
 			  // In this block you can do something with new state.
 			  //console.log(this.state.dataSource);
 			});
-		  })
-		  .catch((error) => {
-			console.error(error);
-		  });
+			})
+			.catch((error) => {
+				console.error(error);
+			});
 	}
 
-	onPressLearnMore = () => {
-		
+	onPressLearnMore = (articles_link) => {
+		console.log(articles_link);
+		Linking.openURL(articles_link);
 	}
 	
 	renderListItem = (item) => {
 		this.count = this.count + 1;
 		return (
 			<View style={styles.container}>
-				<View style={this.count % 2 == 0 ? styles.title_odd : styles.title_even}>
-					<Text style={this.count % 2 == 0 ? styles.title_odd : styles.title_even}>{item.item.articles_title} </Text>
-					<Text style={styles.title_date}>{item.item.articles_date}</Text>
+				<View style={this.count % 2 == 0 ? styles.title_cont_odd : styles.title_cont_even}>
+					<View>
+						<Text style={this.count % 2 == 0 ? styles.title_odd : styles.title_even}>{item.item.articles_title} </Text>
+					</View>
+					<View>
+						<Text style={styles.title_date}>{item.item.articles_date}</Text>
+					</View>
 				</View>
 				<View style={styles.content_cont}>
 					<Text style={this.count % 2 == 0 ? styles.content_odd : styles.content_even}>{item.item.articles_text}</Text>
-					<View style={{flex: 1, ustifyContent: 'center', alignItems: 'center', height: 50}}>
-						<Button title='Weiter' onPress={this.onPressLearnMore} color='#999900' style={{height: 50}} />
+					<View style={styles.button_cont}>
+						<Button title='Weiter' onPress={() => this.onPressLearnMore(item.item.articles_link)} color='#999900' style={styles.button_more} />
 					</View>
 				</View>
 			</View>
@@ -177,12 +183,14 @@ const styles = StyleSheet.create({
 	},
 	
 	title_cont_odd: {
-		flexDirection: 'row',
+		flex: 1,
+		flexDirection: 'column',
 		backgroundColor: '#414a4c',
 	},
 	
 	title_cont_even: {
-		flexDirection: 'row',
+		flex: 1,
+		flexDirection: 'column',
 		backgroundColor: '#232b2b',
 	},
   
@@ -205,9 +213,7 @@ const styles = StyleSheet.create({
 	title_date: {
 		color: '#ffffff',
 		fontSize: 15,
-		padding: 22,
-		position: 'absolute',
-		right: 0		
+		padding: 10,		
 	},
 	
 	content_cont: {
@@ -220,7 +226,7 @@ const styles = StyleSheet.create({
 		padding: 10,
 		fontSize: 15,
 		color: '#ffffff',
-		width: Dimensions.get('window').width / 1.20,
+		flex: 1,
 	},
 	
 	content_even: {
@@ -228,6 +234,15 @@ const styles = StyleSheet.create({
 		padding: 10,
 		fontSize: 15,
 		color: '#ffffff',
-		width: Dimensions.get('window').width / 1.20,
+		flex: 1,
+	},
+	
+	button_cont: {
+		justifyContent: 'center',
+		alignItems: 'center',
+	},
+	
+	button_more: {
+		height: 60,
 	},
 });
