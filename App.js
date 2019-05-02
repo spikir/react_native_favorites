@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View, Text, Image, TouchableOpacity, FlatList, Button, Dimensions, Linking  } from 'react-native';
+import { Modal, TextInput, ScrollView, StyleSheet, View, Text, Image, TouchableOpacity, FlatList, Button, Dimensions, Linking  } from 'react-native';
 import { Font } from 'expo';
 import FontAwesome, { Icons } from "react-native-fontawesome";
 
@@ -10,7 +10,17 @@ export default class App extends React.Component {
 		this.state = {
 			dataSource: [],
 			page: 1, 
-			amount: 0
+			amount: 0,
+			showLoginRegisterMenu: true,
+			showRegisterForm: false,
+			usr: '',
+			pwd: '',
+			reg_usr: '',
+			reg_pwd: '',
+			reg_pwd_rep: '',
+			logged: false,
+			errorReg: false,
+			loginFailed: false,
 		};
 		
 		this.renderrListItem = this.renderListItem.bind(this);
@@ -18,6 +28,9 @@ export default class App extends React.Component {
 		this.addPage = this.addPage.bind(this);
 		this.minusPage = this.minusPage.bind(this);
 		this.onPressLearnMore = this.onPressLearnMore.bind(this);
+		this.login = this.login.bind(this);
+		this.register = this.register.bind(this);
+		this.handleChange = this.handleChange.bind(this);
 		this.count = 0;
 		this.loaded = false;
 	}
@@ -59,7 +72,6 @@ export default class App extends React.Component {
 	}
 
 	onPressLearnMore = (articles_link) => {
-		console.log(articles_link);
 		Linking.openURL(articles_link);
 	}
 	
@@ -107,36 +119,171 @@ export default class App extends React.Component {
 		}
 	}
 	
-	render() {
-		if(this.loaded == false) {
-			return <Text>{'Loading'}</Text>
-		}
-		return (
-				<ScrollView style={styles.wrapper} stickyHeaderIndices={[1]}>
-					<View style={styles.header}>
-						<Image
-							style={styles.headerImg}
-						  source={require('./img/sea-beach-holiday-vacation.jpg')}
-						/>
-						<Text style={styles.bars}>
-							{Icons.bars }
-						</Text>
-					</View>
-					<View style={styles.pagination}>
-						<View style={styles.menu}>
-							<TouchableOpacity onPress={this.minusPage}><Text style={styles.fonts}>{Icons.chevronLeft}</Text></TouchableOpacity><Text>'  '</Text><TouchableOpacity onPress={this.addPage}><Text style={styles.fonts}>{Icons.chevronRight}</Text></TouchableOpacity>
-						</View>
-					</View>
-					<FlatList
-						data={this.state.dataSource}
-						keyExtractor={this.keyExtractor}
-						renderItem={this.renderListItem}
-					  />
-			</ScrollView>
-		);
+	login = () => {
+		console.log('https://meningococcal-distr.000webhostapp.com/login.php?usr='+this.state.usr+'&pwd='+this.state.pwd);
+		fetch('https://meningococcal-distr.000webhostapp.com/login.php?usr='+this.state.usr+'&pwd='+this.state.pwd)
+			.then((response) => response.json())
+			.then((responseJson) => {
+				if(responseJson == true) {
+					this.setState({
+						showLoginRegisterMenu: false,
+						showRegisterForm: false,
+					}, function() {
+				  // In this block you can do something with new state.
+				  //console.log(this.state.dataSource);
+					});
+				} else {
+					this.setState({
+						loginFailed: true,
+					});
+				}
+			})
+			.catch((error) => {
+				console.error(error);
+			});
 	}
 	
+	register_form = () => {
+		this.setState({
+			showRegisterForm: true,
+			showLoginRegisterMenu: false,
+		});
+	}
 	
+	register = () => {
+		if(this.state.reg_usr == '' || this.state.reg_pwd == '' || this.state.reg_pwd_rep == '') {
+			this.setState({
+				errorReg: true
+			});
+			return;
+		}
+		console.log('https://meningococcal-distr.000webhostapp.com/register.php?usr='+this.state.reg_usr+'&pwd='+this.state.reg_pwd);
+		fetch('https://meningococcal-distr.000webhostapp.com/register.php?usr='+this.state.reg_usr+'&pwd='+this.state.reg_pwd)
+			.then((response) => response.json())
+			.then((responseJson) => {
+		});
+		this.setState({
+			showRegisterForm: false,
+			showLoginRegisterMenu: true,
+		});
+	}
+	
+	cancel_reg = () => {
+		this.setState({
+			showRegisterForm: false,
+			showLoginRegisterMenu: true,
+		});
+	}
+	
+	handleChange = (name, e) => {
+		let change = {};
+		change[name] = e.nativeEvent.text;
+		this.setState(change);
+	}
+	
+	render() {
+		if(this.loaded == false) {
+			return <Image
+						style={styles.headerImg}
+					  source={require('./img/ounq1mw5kdxy.gif')}
+					/>
+		}
+		return (<View>
+					<ScrollView>
+					<Modal
+						animationType="none"
+						transparent={false}
+						visible={this.state.showLoginRegisterMenu}
+						onRequestClose={() => {
+					}}>
+						<View style={styles.loginRegisterCont}>
+							<Image
+								style={styles.loginRegisterImg}
+							  source={require('./img/balcony-life-person-103127.jpg')}
+							/>
+							<View>{this.state.loginFailed ? <Text style={styles.regTextField}>Login ungültig</Text> : null}</View>
+							<View style={styles.loginRegisterMenu}>
+								<Text style={styles.textField}>Login</Text>
+								<Text style={styles.textField}>Benutzername</Text>
+								<TextInput style={styles.field} value={this.state.usr} onChange={this.handleChange.bind(this, 'usr')}></TextInput>
+								<Text style={styles.textField}>Passwort</Text>
+								<TextInput style={styles.field} secureTextEntry={true} value={this.state.pwd} onChange={this.handleChange.bind(this, 'pwd')}></TextInput>
+								<View style={styles.button_login}>
+									<View style={styles.button_log}>
+										<Button title='Anmelden' onPress={this.login} color='#999900'/>
+									</View>
+									<View style={styles.button_reg}>
+										<Button title='Registrieren' onPress={this.register_form} color='#999900'/>
+									</View>
+								</View>
+							</View>
+						</View>
+					</Modal>
+					</ScrollView>
+					<ScrollView>
+						<Modal
+						animationType="none"
+						transparent={false}
+						visible={this.state.showRegisterForm}
+						hideModalContentWhileAnimating={true}
+						onRequestClose={() => {
+						}}>
+							<View style={styles.loginRegisterCont}>
+								<Image
+									style={styles.loginRegisterImg}
+								  source={require('./img/balcony-life-person-103127.jpg')}
+								/>
+								<View>{this.state.errorReg ? <Text style={styles.regTextField}>Füllen Sie alle Felder aus</Text> : null}</View>
+								<View style={styles.loginRegisterMenu}>
+									<Text style={styles.regTextField}>Benutzername</Text>
+									<TextInput style={styles.field} value={this.state.reg_usr} onChange={this.handleChange.bind(this, 'reg_usr')}></TextInput>
+									<Text style={styles.regTextField}>Passwort</Text>
+									<TextInput style={styles.field} secureTextEntry={true} value={this.state.reg_pwd} onChange={this.handleChange.bind(this, 'reg_pwd')}></TextInput>
+									<Text style={styles.regTextField} >Passwort wiedeholen</Text>
+									<TextInput style={styles.field} secureTextEntry={true} value={this.state.reg_pwd_rep} onChange={this.handleChange.bind(this, 'reg_pwd_rep')}></TextInput>
+									<View style={styles.button_login}>
+										<View style={styles.button_log}>
+											<Button title='Registrieren' onPress={this.register} color='#999900'/>
+										</View>
+										<View style={styles.button_reg}>
+											<Button title='Abbrechen' onPress={this.cancel_reg} color='#999900'/>
+										</View>
+									</View>
+								</View>
+							</View>
+						</Modal>
+					</ScrollView>
+					<ScrollView style={styles.wrapper} stickyHeaderIndices={[1]}>
+						<View style={styles.header}>
+							<Image
+								style={styles.headerImg}
+							  source={require('./img/sea-beach-holiday-vacation.jpg')}
+							/>
+							<View style={styles.bars}>
+								<TouchableOpacity onPress={this.showMenu}>
+									<Text style={styles.fonts}>
+										{Icons.bars }
+									</Text>
+								</TouchableOpacity>
+							</View>
+							<View style={this.state.showMenu == true ? styles.userMenuShow : styles.userMenuHide}>
+								<Text style={styles.userMenu}>User</Text>
+								<Text style={styles.userMenu}>Favorites</Text>
+							</View>
+						</View>
+						<View style={styles.pagination}>
+							<View style={styles.menu}>
+								<TouchableOpacity onPress={this.minusPage}><Text style={styles.fonts}>{Icons.chevronLeft}</Text></TouchableOpacity><Text>'  '</Text><TouchableOpacity onPress={this.addPage}><Text style={styles.fonts}>{Icons.chevronRight}</Text></TouchableOpacity>
+							</View>
+						</View>
+						<FlatList
+							data={this.state.dataSource}
+							keyExtractor={this.keyExtractor}
+							renderItem={this.renderListItem}
+						  />
+					</ScrollView>
+				</View>);
+	}
 }
 
 const styles = StyleSheet.create({
@@ -156,12 +303,32 @@ const styles = StyleSheet.create({
 	},
 	
 	bars: {
-		fontSize: 40,
-		fontFamily: 'awesome',
-		color: '#FFFFFF',
 		position: 'absolute',
 		right: 20,
 		top: 100,
+	},
+	
+	userMenuShow: {
+		position: 'absolute',
+		display: 'flex',
+		top: 0,
+		flex: 1,
+		flexDirection: 'column',
+		alignItems: 'center',
+		height: 300,
+		backgroundColor: '#0e1111',
+		paddingLeft: 50,
+		paddingRight: 50,
+	},
+	
+	userMenuHide: {
+		display: 'none'
+	},
+	
+	userMenu: {
+		fontSize: 30,
+		color: '#FFFFFF',
+		marginTop: 40,
 	},
 	
 	pagination: {
@@ -244,5 +411,54 @@ const styles = StyleSheet.create({
 	
 	button_more: {
 		height: 60,
+	},
+	
+	loginRegisterCont: {
+		flex: 1,
+		flexDirection: 'column',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		backgroundColor: '#0e1111',
+	},
+	
+	loginRegisterMenu: {
+		flexDirection: 'column',
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	
+	loginRegisterImg: {
+		flex: 1, 
+		flexDirection: 'column',
+		resizeMode: 'contain'
+	},
+	
+	textField: {
+		color: '#FFFFFF',
+		padding: 20,
+	},
+	
+	regTextField: {
+		color: '#FFFFFF',
+		padding: 10,
+	},
+	
+	field: {
+		backgroundColor: '#FFFFFF',
+		width: 200
+	},
+	
+	button_login: {
+		marginTop: 50,
+		flexDirection: 'row',
+	},
+	
+	button_log: {
+		marginRight: 50,
+		
+	},
+	
+	button_reg: {
+		marginLeft: 50,
 	},
 });
