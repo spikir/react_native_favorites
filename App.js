@@ -3,6 +3,32 @@ import { Modal, TextInput, ScrollView, StyleSheet, View, Text, Image, TouchableO
 import { Font } from 'expo';
 import FontAwesome, { Icons } from "react-native-fontawesome";
 
+const LoginForm = ({states, handleChange, login, register_form}) => {
+	return (<ScrollView>
+				<View style={styles.loginRegisterCont}>
+					<Image
+						style={styles.loginRegisterImg}
+					  source={require('./img/balcony-life-person-103127.jpg')}
+					/>
+					<View>{states.loginFailed ? <Text style={styles.regTextField}>Login ungültig</Text> : null}</View>
+					<View style={styles.loginRegisterMenu}>
+						<Text style={styles.textField}>Login</Text>
+						<Text style={styles.textField}>Benutzername</Text>
+						<TextInput style={styles.field} value={states.usr} onChange={() => {handleChange(this, 'usr')}}></TextInput>
+						<Text style={styles.textField}>Passwort</Text>
+						<TextInput style={styles.field} secureTextEntry={true} value={states.pwd} onChange={() => {handleChange(this, 'pwd')}}></TextInput>
+						<View style={styles.button_login}>
+							<View style={styles.button_log}>
+								<Button title="Anmelden" onPress={() => {login()}} color='#999900'></Button>
+							</View>
+							<View style={styles.button_reg}>
+								<Button title="Registrieren" onPress={() => {register_form()}} color='#999900'></Button>
+							</View>
+						</View>
+					</View>
+				</View>
+			</ScrollView>);
+}
 	
 export default class App extends React.Component {
 	constructor(props) {
@@ -120,7 +146,6 @@ export default class App extends React.Component {
 	}
 	
 	login = () => {
-		console.log('https://meningococcal-distr.000webhostapp.com/login.php?usr='+this.state.usr+'&pwd='+this.state.pwd);
 		fetch('https://meningococcal-distr.000webhostapp.com/login.php?usr='+this.state.usr+'&pwd='+this.state.pwd)
 			.then((response) => response.json())
 			.then((responseJson) => {
@@ -157,7 +182,6 @@ export default class App extends React.Component {
 			});
 			return;
 		}
-		console.log('https://meningococcal-distr.000webhostapp.com/register.php?usr='+this.state.reg_usr+'&pwd='+this.state.reg_pwd);
 		fetch('https://meningococcal-distr.000webhostapp.com/register.php?usr='+this.state.reg_usr+'&pwd='+this.state.reg_pwd)
 			.then((response) => response.json())
 			.then((responseJson) => {
@@ -188,38 +212,14 @@ export default class App extends React.Component {
 					  source={require('./img/ounq1mw5kdxy.gif')}
 					/>
 		}
+		if(this.state.showLoginRegisterMenu == true) {
+			return (<LoginForm 
+							states={this.state} 
+							handleChange={this.handleChange}
+							login={this.login} 
+							register_form={this.register_form}/>);
+		}
 		return (<View>
-					<ScrollView>
-					<Modal
-						animationType="none"
-						transparent={false}
-						visible={this.state.showLoginRegisterMenu}
-						onRequestClose={() => {
-					}}>
-						<View style={styles.loginRegisterCont}>
-							<Image
-								style={styles.loginRegisterImg}
-							  source={require('./img/balcony-life-person-103127.jpg')}
-							/>
-							<View>{this.state.loginFailed ? <Text style={styles.regTextField}>Login ungültig</Text> : null}</View>
-							<View style={styles.loginRegisterMenu}>
-								<Text style={styles.textField}>Login</Text>
-								<Text style={styles.textField}>Benutzername</Text>
-								<TextInput style={styles.field} value={this.state.usr} onChange={this.handleChange.bind(this, 'usr')}></TextInput>
-								<Text style={styles.textField}>Passwort</Text>
-								<TextInput style={styles.field} secureTextEntry={true} value={this.state.pwd} onChange={this.handleChange.bind(this, 'pwd')}></TextInput>
-								<View style={styles.button_login}>
-									<View style={styles.button_log}>
-										<Button title='Anmelden' onPress={this.login} color='#999900'/>
-									</View>
-									<View style={styles.button_reg}>
-										<Button title='Registrieren' onPress={this.register_form} color='#999900'/>
-									</View>
-								</View>
-							</View>
-						</View>
-					</Modal>
-					</ScrollView>
 					<ScrollView>
 						<Modal
 						animationType="none"
@@ -414,7 +414,6 @@ const styles = StyleSheet.create({
 	},
 	
 	loginRegisterCont: {
-		flex: 1,
 		flexDirection: 'column',
 		alignItems: 'center',
 		justifyContent: 'space-between',
@@ -429,7 +428,8 @@ const styles = StyleSheet.create({
 	
 	loginRegisterImg: {
 		flex: 1, 
-		flexDirection: 'column',
+		height: 250,
+		flexDirection: 'column', 
 		resizeMode: 'contain'
 	},
 	
