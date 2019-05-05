@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal, TextInput, ScrollView, StyleSheet, View, Text, Image, TouchableOpacity, FlatList, Button, Dimensions, Linking  } from 'react-native';
-import { Font } from 'expo';
+import { Font, SecureStore } from 'expo';
 import FontAwesome, { Icons } from "react-native-fontawesome";
 
 const LoginForm = ({states, handleChange, login, register_form}) => {
@@ -11,9 +11,9 @@ const LoginForm = ({states, handleChange, login, register_form}) => {
 							style={styles.loginRegisterImg}
 						  source={require('./img/balcony-life-person-103127.jpg')}
 						/>
-						<View>{states.loginFailed ? <Text style={styles.regTextField}>Login ungültig</Text> : null}</View>
 						<View style={styles.loginRegisterMenu}>
 							<Text style={styles.textField}>Login</Text>
+							<View>{states.loginFailed ? <Text style={styles.regTextField}>Login ungültig</Text> : null}</View>
 							<Text style={styles.textField}>Benutzername</Text>
 							<TextInput style={styles.field} value={states.usr} onChange={(event) => {handleChange(event, 'usr')}}></TextInput>
 							<Text style={styles.textField}>Passwort</Text>
@@ -40,8 +40,9 @@ const RegisterForm = ({states, handleChange, register, cancel_reg}) => {
 							style={styles.loginRegisterImg}
 						  source={require('./img/balcony-life-person-103127.jpg')}
 						/>
-						<View>{states.errorReg ? <Text style={styles.regTextField}>Füllen Sie alle Felder aus</Text> : null}</View>
 						<View style={styles.loginRegisterMenu}>
+							<Text style={styles.textField}>Registration</Text>
+							<View>{states.errorReg ? <Text style={styles.regTextField}>Füllen Sie alle Felder aus</Text> : null}</View>
 							<Text style={styles.regTextField}>Benutzername</Text>
 							<TextInput style={styles.field} value={states.reg_usr} onChange={(event) => {handleChange(event, 'reg_usr')}}></TextInput>
 							<Text style={styles.regTextField}>Passwort</Text>
@@ -108,6 +109,17 @@ export default class App extends React.Component {
 					amount: responseJson[0]['amount']
 				})
 		  });
+		Promise.all([
+			SecureStore.getItemAsync('usr'),
+			SecureStore.getItemAsync('pwd')
+		]).then((responses) => {
+			this.setState({
+				usr: responses[0],
+				pwd: responses[1],
+			}, function() {
+				this.login();
+			});
+		});;
 		this.loadDataList();
 	}
 	
@@ -186,8 +198,8 @@ export default class App extends React.Component {
 						showLoginRegisterMenu: false,
 						showRegisterForm: false,
 					}, function() {
-				  // In this block you can do something with new state.
-				  //console.log(this.state.dataSource);
+						SecureStore.setItemAsync('usr', this.state.usr);
+						SecureStore.setItemAsync('pwd', this.state.pwd);
 					});
 				} else {
 					this.setState({
@@ -204,6 +216,7 @@ export default class App extends React.Component {
 		this.setState({
 			showRegisterForm: true,
 			showLoginRegisterMenu: false,
+			loginFailed: false,
 		});
 	}
 	
@@ -228,6 +241,7 @@ export default class App extends React.Component {
 		this.setState({
 			showRegisterForm: false,
 			showLoginRegisterMenu: true,
+			errorReg: false,
 		});
 	}
 	
@@ -466,7 +480,6 @@ const styles = StyleSheet.create({
 	
 	button_log: {
 		marginRight: 50,
-		
 	},
 	
 	button_reg: {
