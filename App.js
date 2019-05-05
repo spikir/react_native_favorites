@@ -4,31 +4,63 @@ import { Font } from 'expo';
 import FontAwesome, { Icons } from "react-native-fontawesome";
 
 const LoginForm = ({states, handleChange, login, register_form}) => {
-	return (<ScrollView>
-				<View style={styles.loginRegisterCont}>
-					<Image
-						style={styles.loginRegisterImg}
-					  source={require('./img/balcony-life-person-103127.jpg')}
-					/>
-					<View>{states.loginFailed ? <Text style={styles.regTextField}>Login ungültig</Text> : null}</View>
-					<View style={styles.loginRegisterMenu}>
-						<Text style={styles.textField}>Login</Text>
-						<Text style={styles.textField}>Benutzername</Text>
-						<TextInput style={styles.field} value={states.usr} onChange={() => {handleChange(this, 'usr')}}></TextInput>
-						<Text style={styles.textField}>Passwort</Text>
-						<TextInput style={styles.field} secureTextEntry={true} value={states.pwd} onChange={() => {handleChange(this, 'pwd')}}></TextInput>
-						<View style={styles.button_login}>
-							<View style={styles.button_log}>
-								<Button title="Anmelden" onPress={() => {login()}} color='#999900'></Button>
-							</View>
-							<View style={styles.button_reg}>
-								<Button title="Registrieren" onPress={() => {register_form()}} color='#999900'></Button>
+	return (<View style={styles.loginRegisterWrap}>
+				<ScrollView>
+					<View style={styles.loginRegisterCont}>
+						<Image
+							style={styles.loginRegisterImg}
+						  source={require('./img/balcony-life-person-103127.jpg')}
+						/>
+						<View>{states.loginFailed ? <Text style={styles.regTextField}>Login ungültig</Text> : null}</View>
+						<View style={styles.loginRegisterMenu}>
+							<Text style={styles.textField}>Login</Text>
+							<Text style={styles.textField}>Benutzername</Text>
+							<TextInput style={styles.field} value={states.usr} onChange={(event) => {handleChange(event, 'usr')}}></TextInput>
+							<Text style={styles.textField}>Passwort</Text>
+							<TextInput style={styles.field} secureTextEntry={true} value={states.pwd} onChange={(event) => {handleChange(event, 'pwd')}}></TextInput>
+							<View style={styles.button_login}>
+								<View style={styles.button_log}>
+									<Button title="Anmelden" onPress={() => {login()}} color='#999900'></Button>
+								</View>
+								<View style={styles.button_reg}>
+									<Button title="Registrieren" onPress={() => {register_form()}} color='#999900'></Button>
+								</View>
 							</View>
 						</View>
 					</View>
-				</View>
-			</ScrollView>);
+				</ScrollView>
+			</View>);
 }
+	
+const RegisterForm = ({states, handleChange, register, cancel_reg}) => {
+	return (<View style={styles.loginRegisterWrap}>
+				<ScrollView>
+					<View style={styles.loginRegisterCont}>
+						<Image
+							style={styles.loginRegisterImg}
+						  source={require('./img/balcony-life-person-103127.jpg')}
+						/>
+						<View>{states.errorReg ? <Text style={styles.regTextField}>Füllen Sie alle Felder aus</Text> : null}</View>
+						<View style={styles.loginRegisterMenu}>
+							<Text style={styles.regTextField}>Benutzername</Text>
+							<TextInput style={styles.field} value={states.reg_usr} onChange={(event) => {handleChange(event, 'reg_usr')}}></TextInput>
+							<Text style={styles.regTextField}>Passwort</Text>
+							<TextInput style={styles.field} secureTextEntry={true} value={states.reg_pwd} onChange={(event) => {handleChange(event, 'reg_pwd')}}></TextInput>
+							<Text style={styles.regTextField} >Passwort wiedeholen</Text>
+							<TextInput style={styles.field} secureTextEntry={true} value={states.reg_pwd_rep} onChange={(event) => {handleChange(event, 'reg_pwd_rep')}}></TextInput>
+							<View style={styles.button_login}>
+								<View style={styles.button_log}>
+									<Button title='Registrieren' onPress={() => {register()}} color='#999900'></Button>
+								</View>
+								<View style={styles.button_reg}>
+									<Button title='Abbrechen' onPress={() => {cancel_reg()}} color='#999900'></Button>
+								</View>
+							</View>
+						</View>
+					</View>
+				</ScrollView>
+			</View>);
+}	
 	
 export default class App extends React.Component {
 	constructor(props) {
@@ -201,7 +233,7 @@ export default class App extends React.Component {
 	
 	handleChange = (name, e) => {
 		let change = {};
-		change[name] = e.nativeEvent.text;
+		change[e] = name.nativeEvent.text;
 		this.setState(change);
 	}
 	
@@ -209,50 +241,25 @@ export default class App extends React.Component {
 		if(this.loaded == false) {
 			return <Image
 						style={styles.headerImg}
-					  source={require('./img/ounq1mw5kdxy.gif')}
+						source={require('./img/ounq1mw5kdxy.gif')}
 					/>
 		}
 		if(this.state.showLoginRegisterMenu == true) {
 			return (<LoginForm 
-							states={this.state} 
-							handleChange={this.handleChange}
-							login={this.login} 
-							register_form={this.register_form}/>);
+						states={this.state} 
+						handleChange={this.handleChange}
+						login={this.login} 
+						register_form={this.register_form}/>);
 		}
+		if(this.state.showRegisterForm == true) {
+			return (<RegisterForm 
+						states={this.state}
+						handleChange={this.handleChange}
+						register={this.register}
+						cancel_reg={this.cancel_reg}/>);
+		}
+		
 		return (<View>
-					<ScrollView>
-						<Modal
-						animationType="none"
-						transparent={false}
-						visible={this.state.showRegisterForm}
-						hideModalContentWhileAnimating={true}
-						onRequestClose={() => {
-						}}>
-							<View style={styles.loginRegisterCont}>
-								<Image
-									style={styles.loginRegisterImg}
-								  source={require('./img/balcony-life-person-103127.jpg')}
-								/>
-								<View>{this.state.errorReg ? <Text style={styles.regTextField}>Füllen Sie alle Felder aus</Text> : null}</View>
-								<View style={styles.loginRegisterMenu}>
-									<Text style={styles.regTextField}>Benutzername</Text>
-									<TextInput style={styles.field} value={this.state.reg_usr} onChange={this.handleChange.bind(this, 'reg_usr')}></TextInput>
-									<Text style={styles.regTextField}>Passwort</Text>
-									<TextInput style={styles.field} secureTextEntry={true} value={this.state.reg_pwd} onChange={this.handleChange.bind(this, 'reg_pwd')}></TextInput>
-									<Text style={styles.regTextField} >Passwort wiedeholen</Text>
-									<TextInput style={styles.field} secureTextEntry={true} value={this.state.reg_pwd_rep} onChange={this.handleChange.bind(this, 'reg_pwd_rep')}></TextInput>
-									<View style={styles.button_login}>
-										<View style={styles.button_log}>
-											<Button title='Registrieren' onPress={this.register} color='#999900'/>
-										</View>
-										<View style={styles.button_reg}>
-											<Button title='Abbrechen' onPress={this.cancel_reg} color='#999900'/>
-										</View>
-									</View>
-								</View>
-							</View>
-						</Modal>
-					</ScrollView>
 					<ScrollView style={styles.wrapper} stickyHeaderIndices={[1]}>
 						<View style={styles.header}>
 							<Image
@@ -413,11 +420,15 @@ const styles = StyleSheet.create({
 		height: 60,
 	},
 	
+	loginRegisterWrap: {
+		flex: 1,
+		backgroundColor: '#0e1111',
+	},
+	
 	loginRegisterCont: {
+		flex: 1,
 		flexDirection: 'column',
 		alignItems: 'center',
-		justifyContent: 'space-between',
-		backgroundColor: '#0e1111',
 	},
 	
 	loginRegisterMenu: {
