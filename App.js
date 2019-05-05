@@ -80,6 +80,7 @@ export default class App extends React.Component {
 			logged: false,
 			errorReg: false,
 			loginFailed: false,
+			showMenu: false,
 		};
 		
 		this.renderrListItem = this.renderListItem.bind(this);
@@ -113,13 +114,17 @@ export default class App extends React.Component {
 			SecureStore.getItemAsync('usr'),
 			SecureStore.getItemAsync('pwd')
 		]).then((responses) => {
-			this.setState({
-				usr: responses[0],
-				pwd: responses[1],
-			}, function() {
-				this.login();
-			});
-		});;
+			console.log(responses[0]);
+			console.log(responses[1]);
+			if(responses[0] != null && responses[1] != null) {
+				this.setState({
+					usr: responses[0],
+					pwd: responses[1],
+				}, function() {
+					this.login();
+				});	
+			}
+		});
 		this.loadDataList();
 	}
 	
@@ -244,6 +249,23 @@ export default class App extends React.Component {
 			errorReg: false,
 		});
 	}
+
+	showMenu = () => {
+		this.setState({
+			showMenu: !this.state.showMenu,
+		});
+	}
+	
+	logout = () => {
+		SecureStore.deleteItemAsync('usr');
+		SecureStore.deleteItemAsync('pwd');
+		this.setState({
+			showRegisterForm: false,
+			showLoginRegisterMenu: true,
+			usr: '',
+			pwd: '',
+		});
+	}
 	
 	handleChange = (name, e) => {
 		let change = {};
@@ -290,6 +312,7 @@ export default class App extends React.Component {
 							<View style={this.state.showMenu == true ? styles.userMenuShow : styles.userMenuHide}>
 								<Text style={styles.userMenu}>User</Text>
 								<Text style={styles.userMenu}>Favorites</Text>
+								<Text style={styles.userMenu} onPress={this.logout}>Logout</Text>
 							</View>
 						</View>
 						<View style={styles.pagination}>
