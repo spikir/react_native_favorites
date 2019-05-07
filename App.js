@@ -3,8 +3,6 @@ import { Modal, TextInput, ScrollView, StyleSheet, View, Text, Image, TouchableO
 import { Font, SecureStore, Permissions, Notifications } from 'expo';
 import FontAwesome, { Icons } from "react-native-fontawesome";
 
-import registerForPushNotificationsAsync from './registerForPushNotificationsAsync';
-
 const LoginForm = ({states, handleChange, login, register_form}) => {
 	return (<View style={styles.loginRegisterWrap}>
 				<ScrollView>
@@ -105,7 +103,6 @@ export default class App extends React.Component {
 	}
 	
 	componentDidMount() {
-		registerForPushNotificationsAsync();
 		fetch('https://meningococcal-distr.000webhostapp.com/total.php')
 			.then((response) => response.json())
 			.then((responseJson) => {
