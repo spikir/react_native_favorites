@@ -1,7 +1,9 @@
 import React from 'react';
 import { Modal, TextInput, ScrollView, StyleSheet, View, Text, Image, TouchableOpacity, FlatList, Button, Dimensions, Linking  } from 'react-native';
-import { Font, SecureStore } from 'expo';
+import { Font, SecureStore, Permissions, Notifications } from 'expo';
 import FontAwesome, { Icons } from "react-native-fontawesome";
+
+import registerForPushNotificationsAsync from './registerForPushNotificationsAsync';
 
 const LoginForm = ({states, handleChange, login, register_form}) => {
 	return (<View style={styles.loginRegisterWrap}>
@@ -103,6 +105,7 @@ export default class App extends React.Component {
 	}
 	
 	componentDidMount() {
+		registerForPushNotificationsAsync();
 		fetch('https://meningococcal-distr.000webhostapp.com/total.php')
 			.then((response) => response.json())
 			.then((responseJson) => {
