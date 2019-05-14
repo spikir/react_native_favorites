@@ -1,66 +1,115 @@
 import React from 'react';
-import { Modal, TextInput, ScrollView, StyleSheet, View, Text, Image, TouchableOpacity, FlatList, Button, Dimensions, Linking  } from 'react-native';
-import { Font, SecureStore, Permissions, Notifications } from 'expo';
+import { Modal, TextInput, ScrollView, StyleSheet, View, Text, Image, TouchableOpacity, FlatList, Button, Linking  } from 'react-native';
+import { Font, SecureStore } from 'expo';
 import FontAwesome, { Icons } from "react-native-fontawesome";
 
 const LoginForm = ({states, handleChange, login, register_form}) => {
-	return (<View style={styles.loginRegisterWrap}>
-				<ScrollView>
-					<View style={styles.loginRegisterCont}>
-						<Image
-							style={styles.loginRegisterImg}
-						  source={require('./img/balcony-life-person-103127.jpg')}
-						/>
-						<View style={styles.loginRegisterMenu}>
-							<Text style={styles.textField}>Login</Text>
-							<View>{states.loginFailed ? <Text style={styles.regTextField}>Login ungültig</Text> : null}</View>
-							<Text style={styles.textField}>Benutzername</Text>
-							<TextInput style={styles.field} value={states.usr} onChange={(event) => {handleChange(event, 'usr')}}></TextInput>
-							<Text style={styles.textField}>Passwort</Text>
-							<TextInput style={styles.field} secureTextEntry={true} value={states.pwd} onChange={(event) => {handleChange(event, 'pwd')}}></TextInput>
-							<View style={styles.button_login}>
-								<View style={styles.button_log}>
-									<Button title="Anmelden" onPress={() => {login()}} color='#999900'></Button>
-								</View>
-								<View style={styles.button_reg}>
-									<Button title="Registrieren" onPress={() => {register_form()}} color='#999900'></Button>
-								</View>
-							</View>
+	const gradientHeight=500;
+	const gradientBackground  = 'black';
+	const data = Array.from({ length: gradientHeight });
+	return (
+		<View style={{flex:1}}>
+			{data.map((_, i) => (
+				<View
+					key={i}
+					style={{
+						position: 'absolute',
+						backgroundColor: gradientBackground,
+						height: 1,
+						bottom: (gradientHeight - i),
+						right: 0,
+						left: 0,
+						zIndex: 2,
+						marginBottom: -2,
+						opacity: (1 / gradientHeight) * (i + 1)
+					}}
+				/>
+			))}
+			<View style={styles.loginRegisterCont}>
+				<View style={styles.logImg}>
+					<Image
+						style={styles.loginRegisterImg}
+					  source={require('./img/balcony-life-person-103127.jpg')}
+					/>
+				</View>
+				<View style={styles.loginRegisterMenu}>
+					<View>{states.loginFailed ? <Text style={styles.regTextField}>Login ungültig</Text> : null}</View>
+					<TextInput placeholder="Benutzername" style={styles.field} value={states.usr} onChange={(event) => {handleChange(event, 'usr')}}></TextInput>
+					<TextInput placeholder="Passwort" style={styles.field} secureTextEntry={true} value={states.pwd} onChange={(event) => {handleChange(event, 'pwd')}}></TextInput>
+					<View style={styles.button_login}>
+						<View style={styles.button_log}>
+							<TouchableOpacity
+								onPress={() => {login()}}
+							>
+								<Text style={styles.btn}>Anmelden</Text>
+							</TouchableOpacity>
+						</View>
+						<View style={styles.button_reg}>
+							<TouchableOpacity
+								onPress={() => {register_form()}}
+							>
+								<Text style={styles.btn}>Registrieren</Text>
+							</TouchableOpacity>
 						</View>
 					</View>
-				</ScrollView>
-			</View>);
+				</View>
+			</View>
+		</View>);
 }
 	
 const RegisterForm = ({states, handleChange, register, cancel_reg}) => {
-	return (<View style={styles.loginRegisterWrap}>
-				<ScrollView>
-					<View style={styles.loginRegisterCont}>
-						<Image
-							style={styles.loginRegisterImg}
-						  source={require('./img/balcony-life-person-103127.jpg')}
-						/>
-						<View style={styles.loginRegisterMenu}>
-							<Text style={styles.textField}>Registration</Text>
-							<View>{states.errorReg ? <Text style={styles.regTextField}>Füllen Sie alle Felder aus</Text> : null}</View>
-							<Text style={styles.regTextField}>Benutzername</Text>
-							<TextInput style={styles.field} value={states.reg_usr} onChange={(event) => {handleChange(event, 'reg_usr')}}></TextInput>
-							<Text style={styles.regTextField}>Passwort</Text>
-							<TextInput style={styles.field} secureTextEntry={true} value={states.reg_pwd} onChange={(event) => {handleChange(event, 'reg_pwd')}}></TextInput>
-							<Text style={styles.regTextField} >Passwort wiedeholen</Text>
-							<TextInput style={styles.field} secureTextEntry={true} value={states.reg_pwd_rep} onChange={(event) => {handleChange(event, 'reg_pwd_rep')}}></TextInput>
-							<View style={styles.button_login}>
-								<View style={styles.button_log}>
-									<Button title='Registrieren' onPress={() => {register()}} color='#999900'></Button>
-								</View>
-								<View style={styles.button_reg}>
-									<Button title='Abbrechen' onPress={() => {cancel_reg()}} color='#999900'></Button>
-								</View>
-							</View>
+	const gradientHeight=500;
+	const gradientBackground  = 'black';
+	const data = Array.from({ length: gradientHeight });
+	return (
+		<View style={{flex:1}}>
+			{data.map((_, i) => (
+				<View
+					key={i}
+					style={{
+						position: 'absolute',
+						backgroundColor: gradientBackground,
+						height: 1,
+						bottom: (gradientHeight - i),
+						right: 0,
+						left: 0,
+						zIndex: 2,
+						marginBottom: -2,
+						opacity: (1 / gradientHeight) * (i + 1)
+					}}
+				/>
+			))}
+			<View style={styles.loginRegisterCont}>
+				<View style={styles.logImg}>
+					<Image
+						style={styles.loginRegisterImg}
+					  source={require('./img/balcony-life-person-103127.jpg')}
+					/>
+				</View>
+				<View style={styles.loginRegisterMenu}>
+					<View>{states.errorReg ? <Text style={styles.regTextField}>Füllen Sie alle Felder aus</Text> : null}</View>
+					<TextInput placeholder="Benutzername" style={styles.field} value={states.reg_usr} onChange={(event) => {handleChange(event, 'reg_usr')}}></TextInput>
+					<TextInput placeholder="Passwort" style={styles.field} secureTextEntry={true} value={states.reg_pwd} onChange={(event) => {handleChange(event, 'reg_pwd')}}></TextInput>
+					<TextInput placeholder="Passwort wiederholen" style={styles.field} secureTextEntry={true} value={states.reg_pwd_rep} onChange={(event) => {handleChange(event, 'reg_pwd_rep')}}></TextInput>
+					<View style={styles.button_login}>
+						<View style={styles.button_log}>
+							<TouchableOpacity
+								onPress={() => {register()}}
+							>
+								<Text style={styles.btn}>Registrieren</Text>
+							</TouchableOpacity>
+						</View>
+						<View style={styles.button_reg}>
+							<TouchableOpacity
+								onPress={() => {cancel_reg()}}
+							>
+								<Text style={styles.btn}>Abbrechen</Text>
+							</TouchableOpacity>
 						</View>
 					</View>
-				</ScrollView>
-			</View>);
+				</View>
+			</View>
+		</View>);
 }	
 	
 export default class App extends React.Component {
@@ -114,8 +163,6 @@ export default class App extends React.Component {
 			SecureStore.getItemAsync('usr'),
 			SecureStore.getItemAsync('pwd')
 		]).then((responses) => {
-			console.log(responses[0]);
-			console.log(responses[1]);
 			if(responses[0] != null && responses[1] != null) {
 				this.setState({
 					usr: responses[0],
@@ -288,6 +335,7 @@ export default class App extends React.Component {
 						register_form={this.register_form}/>);
 		}
 		if(this.state.showRegisterForm == true) {
+			
 			return (<RegisterForm 
 						states={this.state}
 						handleChange={this.handleChange}
@@ -457,11 +505,6 @@ const styles = StyleSheet.create({
 		height: 60,
 	},
 	
-	loginRegisterWrap: {
-		flex: 1,
-		backgroundColor: '#0e1111',
-	},
-	
 	loginRegisterCont: {
 		flex: 1,
 		flexDirection: 'column',
@@ -469,9 +512,10 @@ const styles = StyleSheet.create({
 	},
 	
 	loginRegisterMenu: {
-		flexDirection: 'column',
+		flex: 1,
 		alignItems: 'center',
 		justifyContent: 'center',
+		alignSelf:'stretch',
 	},
 	
 	loginRegisterImg: {
@@ -487,25 +531,42 @@ const styles = StyleSheet.create({
 	},
 	
 	regTextField: {
-		color: '#FFFFFF',
+		color: '#FF5722',
 		padding: 10,
 	},
 	
 	field: {
 		backgroundColor: '#FFFFFF',
-		width: 200
+		width: 300,
+		borderRadius: 20,
+		height: 50,
+		marginTop: 10,
+		textAlign: 'center',
+		borderWidth: 2,
+		borderColor: '#D4AF37',
+		fontSize: 20,
 	},
 	
 	button_login: {
+		flexDirection: 'column',
+	},
+	
+	btn: {
 		marginTop: 50,
-		flexDirection: 'row',
+		height: 50,
+		borderRadius: 20,
+		backgroundColor: '#999900',
+		fontSize: 20,
+		padding: 10,
+		justifyContent: 'center',
+		color: '#FFFFFF',
+		width: 200,
+		textAlign: 'center'
 	},
 	
-	button_log: {
-		marginRight: 50,
+	logImg: {
+		justifyContent:'space-around',
+		height: 250,
 	},
 	
-	button_reg: {
-		marginLeft: 50,
-	},
 });
