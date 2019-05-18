@@ -34,8 +34,20 @@ const LoginForm = ({states, handleChange, login, register_form}) => {
 				</View>
 				<View style={styles.loginRegisterMenu}>
 					<View>{states.loginFailed ? <Text style={styles.regTextField}>Login ungültig</Text> : null}</View>
-					<TextInput placeholder="Benutzername" style={styles.field} value={states.usr} onChange={(event) => {handleChange(event, 'usr')}}></TextInput>
-					<TextInput placeholder="Passwort" style={styles.field} secureTextEntry={true} value={states.pwd} onChange={(event) => {handleChange(event, 'pwd')}}></TextInput>
+					<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+						<Image
+							style={styles.fieldIcon}
+							source={require('./img/icons8-name-50.png')}
+						/>
+						<TextInput placeholder="Benutzername" style={styles.field} value={states.usr} onChange={(event) => {handleChange(event, 'usr')}}></TextInput>
+					</View>
+					<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 10}}>
+						<Image
+							style={styles.fieldIcon}
+							source={require('./img/icons8-password-50.png')}
+						/>
+						<TextInput placeholder="Passwort" style={styles.field} secureTextEntry={true} value={states.pwd} onChange={(event) => {handleChange(event, 'pwd')}}></TextInput>
+					</View>
 					<View style={styles.button_login}>
 						<View style={styles.button_log}>
 							<TouchableOpacity
@@ -53,6 +65,12 @@ const LoginForm = ({states, handleChange, login, register_form}) => {
 						</View>
 					</View>
 				</View>
+			</View>
+			<View style={states.loading ? styles.loading : styles.notLoading}>
+			<Image 
+				style={styles.loadingImg}
+				source={require('./img/transparent-background-loading-3.gif')}
+			/>
 			</View>
 		</View>);
 }
@@ -88,9 +106,34 @@ const RegisterForm = ({states, handleChange, register, cancel_reg}) => {
 				</View>
 				<View style={styles.loginRegisterMenu}>
 					<View>{states.errorReg ? <Text style={styles.regTextField}>Füllen Sie alle Felder aus</Text> : null}</View>
-					<TextInput placeholder="Benutzername" style={styles.field} value={states.reg_usr} onChange={(event) => {handleChange(event, 'reg_usr')}}></TextInput>
-					<TextInput placeholder="Passwort" style={styles.field} secureTextEntry={true} value={states.reg_pwd} onChange={(event) => {handleChange(event, 'reg_pwd')}}></TextInput>
-					<TextInput placeholder="Passwort wiederholen" style={styles.field} secureTextEntry={true} value={states.reg_pwd_rep} onChange={(event) => {handleChange(event, 'reg_pwd_rep')}}></TextInput>
+					<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+						<Image
+							style={styles.fieldIcon}
+							source={require('./img/icons8-name-50.png')}
+						/>
+						<TextInput placeholder="Benutzername" style={styles.field} value={states.reg_usr} onChange={(event) => {handleChange(event, 'reg_usr')}}></TextInput>
+					</View>
+					<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 10}}>
+						<Image
+							style={styles.fieldIcon}
+							source={require('./img/icons8-password-50.png')}
+						/>
+						<TextInput placeholder="Passwort" style={styles.field} secureTextEntry={true} value={states.reg_pwd} onChange={(event) => {handleChange(event, 'reg_pwd')}}></TextInput>
+					</View>
+					<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 10}}>
+						<Image
+							style={styles.fieldIcon}
+							source={require('./img/icons8-password-50.png')}
+						/>
+						<TextInput placeholder="Passwort wiederholen" style={styles.field} secureTextEntry={true} value={states.reg_pwd_rep} onChange={(event) => {handleChange(event, 'reg_pwd_rep')}}></TextInput>
+					</View>
+					<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 10}}>
+						<Image
+							style={styles.fieldIcon}
+							source={require('./img/icons8-email-filled-50.png')}
+						/>
+						<TextInput placeholder="E-Mail" style={styles.field} secureTextEntry={true} value={states.reg_email} onChange={(event) => {handleChange(event, 'reg_pwd_rep')}}></TextInput>
+					</View>
 					<View style={styles.button_login}>
 						<View style={styles.button_log}>
 							<TouchableOpacity
@@ -109,6 +152,12 @@ const RegisterForm = ({states, handleChange, register, cancel_reg}) => {
 					</View>
 				</View>
 			</View>
+			<View style={states.loading ? styles.loading : styles.notLoading}>
+				<Image 
+					style={styles.loadingImg}
+					source={require('./img/transparent-background-loading-3.gif')}
+				/>
+			</View>
 		</View>);
 }	
 	
@@ -126,10 +175,12 @@ export default class App extends React.Component {
 			reg_usr: '',
 			reg_pwd: '',
 			reg_pwd_rep: '',
+			reg_email: '',
 			logged: false,
 			errorReg: false,
 			loginFailed: false,
 			showMenu: false,
+			loading: false,
 		};
 		
 		this.renderrListItem = this.renderListItem.bind(this);
@@ -242,6 +293,9 @@ export default class App extends React.Component {
 	}
 	
 	login = () => {
+		this.setState({
+			loading: true,
+		});
 		fetch('https://meningococcal-distr.000webhostapp.com/login.php?usr='+this.state.usr+'&pwd='+this.state.pwd)
 			.then((response) => response.json())
 			.then((responseJson) => {
@@ -249,6 +303,7 @@ export default class App extends React.Component {
 					this.setState({
 						showLoginRegisterMenu: false,
 						showRegisterForm: false,
+						loading: false,
 					}, function() {
 						SecureStore.setItemAsync('usr', this.state.usr);
 						SecureStore.setItemAsync('pwd', this.state.pwd);
@@ -256,6 +311,7 @@ export default class App extends React.Component {
 				} else {
 					this.setState({
 						loginFailed: true,
+						loading: false,
 					});
 				}
 			})
@@ -269,13 +325,19 @@ export default class App extends React.Component {
 			showRegisterForm: true,
 			showLoginRegisterMenu: false,
 			loginFailed: false,
+			usr: '',
+			pwd: '',
 		});
 	}
 	
 	register = () => {
+		this.setState({
+			loading: true,
+		});
 		if(this.state.reg_usr == '' || this.state.reg_pwd == '' || this.state.reg_pwd_rep == '') {
 			this.setState({
-				errorReg: true
+				errorReg: true,
+				loading: false,
 			});
 			return;
 		}
@@ -286,6 +348,7 @@ export default class App extends React.Component {
 		this.setState({
 			showRegisterForm: false,
 			showLoginRegisterMenu: true,
+			loading: false,
 		});
 	}
 	
@@ -311,6 +374,7 @@ export default class App extends React.Component {
 			showLoginRegisterMenu: true,
 			usr: '',
 			pwd: '',
+			showMenu: false,
 		});
 	}
 	
@@ -335,7 +399,6 @@ export default class App extends React.Component {
 						register_form={this.register_form}/>);
 		}
 		if(this.state.showRegisterForm == true) {
-			
 			return (<RegisterForm 
 						states={this.state}
 						handleChange={this.handleChange}
@@ -536,11 +599,10 @@ const styles = StyleSheet.create({
 	},
 	
 	field: {
-		backgroundColor: '#FFFFFF',
+		backgroundColor: 'rgba(0, 0, 0, 0.5)',
 		width: 300,
 		borderRadius: 20,
 		height: 50,
-		marginTop: 10,
 		textAlign: 'center',
 		borderWidth: 2,
 		borderColor: '#D4AF37',
@@ -569,4 +631,38 @@ const styles = StyleSheet.create({
 		height: 250,
 	},
 	
+	loading: {
+		position: 'absolute',
+		top: 0,
+		right: 0,
+		left: 0,
+		bottom: 0,
+		width: '100%',
+		height: '100%',
+		flex: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		backgroundColor: 'rgba(0,0,0,0.5)',
+		opacity: 1,
+	},
+	
+	notLoading: {
+		display: 'none',
+	},
+	
+	loadingImg: {
+		top: 0,
+		right: 0,
+		left: 0,
+		bottom: 0,
+		width: 100,
+		height: 100,
+	},
+	
+	fieldIcon: {
+		position: 'absolute',
+		left: 7,
+		height: 35, 
+		resizeMode: 'contain'
+	}
 });
