@@ -1,7 +1,9 @@
 import React from 'react';
-import { Modal, TextInput, ScrollView, StyleSheet, View, Text, Image, TouchableOpacity, FlatList, Button, Linking  } from 'react-native';
+import { Modal, TextInput, ScrollView, StyleSheet, View, Text, Image, TouchableOpacity, FlatList, Button, Linking, Animated, Dimensions, Keyboard, UIManager } from 'react-native';
 import { Font, SecureStore } from 'expo';
 import FontAwesome, { Icons } from "react-native-fontawesome";
+
+const { State: TextInputState } = TextInput;
 
 const LoginForm = ({states, handleChange, login, register_form}) => {
 	const gradientHeight=500;
@@ -88,6 +90,7 @@ const RegisterForm = ({states, handleChange, register, cancel_reg}) => {
 	const gradientHeight=500;
 	const gradientBackground  = 'black';
 	const data = Array.from({ length: gradientHeight });
+	const { shift } = states;
 	return (
 		<View style={{flex:1}}>
 			{data.map((_, i) => (
@@ -106,6 +109,7 @@ const RegisterForm = ({states, handleChange, register, cancel_reg}) => {
 					}}
 				/>
 			))}
+			<Animated.View style={[styles.container, { transform: [{translateY: shift}] }]}>
 			<View style={styles.loginRegisterCont}>
 				<View style={styles.logImg}>
 					<Image
@@ -147,7 +151,7 @@ const RegisterForm = ({states, handleChange, register, cancel_reg}) => {
 							style={styles.fieldIcon}
 							source={require('./img/icons8-email-50.png')}
 						/>
-						<TextInput placeholder="E-Mail" style={styles.field} secureTextEntry={true} value={states.reg_email} onChange={(event) => {handleChange(event, 'reg_pwd_rep')}}></TextInput>
+						<TextInput placeholder="E-Mail" style={styles.field} value={states.reg_email} onChange={(event) => {handleChange(event, 'reg_email')}}></TextInput>
 					</View>
 					<View style={styles.button_login}>
 						<View style={styles.button_log}>
@@ -167,6 +171,7 @@ const RegisterForm = ({states, handleChange, register, cancel_reg}) => {
 					</View>
 				</View>
 			</View>
+			</Animated.View>
 			<View style={states.loading ? styles.loading : styles.notLoading}>
 				<Image 
 					style={styles.loadingImg}
@@ -198,6 +203,7 @@ export default class App extends React.Component {
 			loading: false,
 			userExists: false,
 			passwordNotMatch: false,
+			shift: new Animated.Value(0),
 		};
 		
 		this.renderrListItem = this.renderListItem.bind(this);
@@ -217,6 +223,8 @@ export default class App extends React.Component {
 			'awesome': require('./assets/fonts/fontawesome-webfont.ttf'),
 		});
 		this.loaded = true;
+		this.keyboardDidShowSub = Keyboard.addListener('keyboardDidShow', this.handleKeyboardDidShow);
+		this.keyboardDidHideSub = Keyboard.addListener('keyboardDidHide', this.handleKeyboardDidHide);
 	}
 	
 	componentDidMount() {
@@ -241,6 +249,11 @@ export default class App extends React.Component {
 			}
 		});
 		this.loadDataList();
+	}
+	
+	componentWillUnmount() {
+		this.keyboardDidShowSub.remove();
+		this.keyboardDidHideSub.remove();
 	}
 	
 	loadDataList = () => {
@@ -357,22 +370,24 @@ export default class App extends React.Component {
 			loading: true,
 			userExists: false,
 		});
-		if(this.state.reg_usr == '' || this.state.reg_pwd == '' || this.state.reg_pwd_rep == '') {
+		if(this.state.reg_usr == '' || this.state.reg_pwd == '' || this.state.reg_pwd_rep == '' || this.state.reg_email == '') {
 			this.setState({
 				errorReg: true,
 				loading: false,
 			});
 			return;
 		}
-		fetch('https://meningococcal-distr.000webhostapp.com/register.php?usr='+this.state.reg_usr+'&pwd='+this.state.reg_pwd+'&email='+this.state.reg_email)
-			.then((response) => response.json())
-			.then((responseJson) => {
-		});
-		this.setState({
-			showRegisterForm: false,
-			showLoginRegisterMenu: true,
-			loading: false,
-		});
+		if(this.state.passwordNotMatch == false && this.state.userExists == false) {
+			fetch('https://meningococcal-distr.000webhostapp.com/register.php?usr='+this.state.reg_usr+'&pwd='+this.state.reg_pwd+'&email='+this.state.reg_email)
+				.then((response) => response.json())
+				.then((responseJson) => {
+				});
+			this.setState({
+				showRegisterForm: false,
+				showLoginRegisterMenu: true,
+				loading: false,
+			});
+		}
 	}
 	
 	cancel_reg = () => {
@@ -433,6 +448,39 @@ export default class App extends React.Component {
 		let change = {};
 		change[e] = name.nativeEvent.text;
 		this.setState(change);
+	}
+	
+	handleKeyboardDidShow = (event) => {
+		const { height: windowHeight } = Dimensions.get('window');
+		const keyboardHeight = event.endCoordinates.height;
+		const currentlyFocusedField = TextInputState.currentlyFocusedField();
+		UIManager.measure(currentlyFocusedField, (originX, originY, width, height, pageX, pageY) => {
+			const fieldHeight = height;
+			const fieldTop = pageY;
+			const gap = (windowHeight - keyboardHeight) - (fieldTop + fieldHeight);
+			if (gap >= 0) {
+				return;
+			}
+			Animated.timing(
+				this.state.shift,
+				{
+				  toValue: gap,
+				  duration: 1000,
+				  useNativeDriver: true,
+				}
+			).start();
+		});
+	}
+	  
+	handleKeyboardDidHide = () => {
+		Animated.timing(
+			this.state.shift,
+			{
+				toValue: 0,
+				duration: 1000,
+				useNativeDriver: true,
+			}
+		).start();
 	}
 	
 	render() {
@@ -500,6 +548,17 @@ export default class App extends React.Component {
 }
 
 const styles = StyleSheet.create({
+	container: {
+		backgroundColor: 'gray',
+		flex: 1,
+		height: '100%',
+		justifyContent: 'space-around',
+		left: 0,
+		position: 'absolute',
+		top: 0,
+		width: '100%'
+	},
+	
 	wrapper: {
 		backgroundColor: '#0e1111',
 		marginTop: 20,
