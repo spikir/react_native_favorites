@@ -56,11 +56,20 @@ const LoginForm = ({states, handleChange, login, register_form}) => {
 								<Text style={styles.btn}>Anmelden</Text>
 							</TouchableOpacity>
 						</View>
-						<View style={styles.button_reg}>
+						<View style={styles.textReg}>
+							<Text style={{fontSize: 18, color: '#FFFFFF'}}>Nicht registiert?</Text>
 							<TouchableOpacity
 								onPress={() => {register_form()}}
 							>
-								<Text style={styles.btn}>Registrieren</Text>
+								<Text style={{fontSize: 18, color: '#999900'}}>Registrieren</Text>
+							</TouchableOpacity>
+						</View>
+						<View style={styles.textReg}>
+							<Text style={{fontSize: 18, color: '#FFFFFF'}}>Passwort vergessen?</Text>
+							<TouchableOpacity
+								onPress={() => {register_form()}}
+							>
+								<Text style={{fontSize: 18, color: '#999900'}}>Konto wiederherstellen</Text>
 							</TouchableOpacity>
 						</View>
 					</View>
@@ -106,13 +115,16 @@ const RegisterForm = ({states, handleChange, register, cancel_reg}) => {
 				</View>
 				<View style={styles.loginRegisterMenu}>
 					<View>{states.errorReg ? <Text style={styles.regTextField}>Füllen Sie alle Felder aus</Text> : null}</View>
-					<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-						<Image
-							style={styles.fieldIcon}
-							source={require('./img/icons8-name-50.png')}
-						/>
-						<TextInput placeholder="Benutzername" style={styles.field} value={states.reg_usr} onChange={(event) => {handleChange(event, 'reg_usr')}}></TextInput>
-					</View>
+						<View style={{flexDirection: 'column'}}>
+							<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+								<Image
+									style={styles.fieldIcon}
+									source={require('./img/icons8-name-50.png')}
+								/>
+								<TextInput placeholder="Benutzername" style={styles.field} value={states.reg_usr} onChange={(event) => {handleChange(event, 'reg_usr')}}></TextInput>
+							</View>
+							<View>{states.userExists ? <Text style={styles.warningReg}>Benutzer existiert bereits</Text> : null}</View>
+						</View>	
 					<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 10}}>
 						<Image
 							style={styles.fieldIcon}
@@ -120,17 +132,20 @@ const RegisterForm = ({states, handleChange, register, cancel_reg}) => {
 						/>
 						<TextInput placeholder="Passwort" style={styles.field} secureTextEntry={true} value={states.reg_pwd} onChange={(event) => {handleChange(event, 'reg_pwd')}}></TextInput>
 					</View>
-					<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 10}}>
-						<Image
-							style={styles.fieldIcon}
-							source={require('./img/icons8-password-50.png')}
-						/>
-						<TextInput placeholder="Passwort wiederholen" style={styles.field} secureTextEntry={true} value={states.reg_pwd_rep} onChange={(event) => {handleChange(event, 'reg_pwd_rep')}}></TextInput>
+					<View style={{flexDirection: 'column'}}>
+						<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 10}}>
+							<Image
+								style={styles.fieldIcon}
+								source={require('./img/icons8-password-50.png')}
+							/>
+							<TextInput placeholder="Passwort wiederholen" style={styles.field} secureTextEntry={true} value={states.reg_pwd_rep} onChange={(event) => {handleChange(event, 'reg_pwd_rep')}}></TextInput>
+						</View>
+						<View>{states.passwordNotMatch ? <Text style={styles.warningReg}>Passwörter stimmen nicht überrein!</Text> : null}</View>
 					</View>
 					<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 10}}>
 						<Image
 							style={styles.fieldIcon}
-							source={require('./img/icons8-email-filled-50.png')}
+							source={require('./img/icons8-email-50.png')}
 						/>
 						<TextInput placeholder="E-Mail" style={styles.field} secureTextEntry={true} value={states.reg_email} onChange={(event) => {handleChange(event, 'reg_pwd_rep')}}></TextInput>
 					</View>
@@ -181,6 +196,8 @@ export default class App extends React.Component {
 			loginFailed: false,
 			showMenu: false,
 			loading: false,
+			userExists: false,
+			passwordNotMatch: false,
 		};
 		
 		this.renderrListItem = this.renderListItem.bind(this);
@@ -227,13 +244,17 @@ export default class App extends React.Component {
 	}
 	
 	loadDataList = () => {
+		this.setState({
+			loading: true,
+		});
 		return fetch('https://meningococcal-distr.000webhostapp.com/lists.php?page='+this.state.page)
 			.then((response) => response.json())
 			.then((responseJson) => {
 				this.setState({
 					isLoading: false,
 					dataSource: responseJson,
-					count: 0
+					count: 0,
+					loading: false,
 				}, function() {
 			  // In this block you can do something with new state.
 			  //console.log(this.state.dataSource);
@@ -327,12 +348,14 @@ export default class App extends React.Component {
 			loginFailed: false,
 			usr: '',
 			pwd: '',
+			userExists: false,
 		});
 	}
 	
 	register = () => {
 		this.setState({
 			loading: true,
+			userExists: false,
 		});
 		if(this.state.reg_usr == '' || this.state.reg_pwd == '' || this.state.reg_pwd_rep == '') {
 			this.setState({
@@ -341,7 +364,7 @@ export default class App extends React.Component {
 			});
 			return;
 		}
-		fetch('https://meningococcal-distr.000webhostapp.com/register.php?usr='+this.state.reg_usr+'&pwd='+this.state.reg_pwd)
+		fetch('https://meningococcal-distr.000webhostapp.com/register.php?usr='+this.state.reg_usr+'&pwd='+this.state.reg_pwd+'&email='+this.state.reg_email)
 			.then((response) => response.json())
 			.then((responseJson) => {
 		});
@@ -379,6 +402,34 @@ export default class App extends React.Component {
 	}
 	
 	handleChange = (name, e) => {
+		if(e == 'reg_usr') {
+			fetch('https://meningococcal-distr.000webhostapp.com/check_username.php?usr='+name.nativeEvent.text)
+				.then((response) => response.json())
+				.then((responseJson) => {
+					if(responseJson == true) {
+						this.setState({
+							userExists: true,
+						});
+						return;
+					} else {
+						this.setState({
+							userExists: false,
+						});
+					}
+			}).catch((error) => {
+				console.error(error);
+			});;
+		} else if(e == 'reg_pwd' || e == 'reg_pwd_rep') {
+			if(this.state.reg_pwd == name.nativeEvent.text || this.state.reg_pwd_rep == name.nativeEvent.text) {
+				this.setState({
+					passwordNotMatch: false,
+				});
+			} else {
+				this.setState({
+					passwordNotMatch: true,
+				});
+			}
+		}
 		let change = {};
 		change[e] = name.nativeEvent.text;
 		this.setState(change);
@@ -435,8 +486,15 @@ export default class App extends React.Component {
 							data={this.state.dataSource}
 							keyExtractor={this.keyExtractor}
 							renderItem={this.renderListItem}
+							loading={this.state.loading}
 						  />
 					</ScrollView>
+					<View style={this.state.loading ? styles.loading : styles.notLoading}>
+						<Image 
+							style={styles.loadingImg}
+							source={require('./img/transparent-background-loading-3.gif')}
+						/>
+					</View>
 				</View>);
 	}
 }
@@ -664,5 +722,17 @@ const styles = StyleSheet.create({
 		left: 7,
 		height: 35, 
 		resizeMode: 'contain'
+	},
+	
+	textReg: {
+		marginTop: 30,
+		fontSize: 30,
+		alignItems: 'center',
+	},
+	
+	warningReg: {
+		textAlign: 'center',
+		alignItems: 'center',
+		color: '#FF5722'
 	}
 });
