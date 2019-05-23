@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, TextInput, ScrollView, StyleSheet, View, Text, Image, TouchableOpacity, FlatList, Button, Linking, Animated, Dimensions, Keyboard, UIManager } from 'react-native';
+import { BackHandler, WebView, TextInput, ScrollView, StyleSheet, View, Text, Image, TouchableOpacity, FlatList, Button, Linking, Animated, Dimensions, Keyboard, UIManager } from 'react-native';
 import { Font, SecureStore } from 'expo';
 import FontAwesome, { Icons } from "react-native-fontawesome";
 
@@ -204,6 +204,7 @@ export default class App extends React.Component {
 			userExists: false,
 			passwordNotMatch: false,
 			shift: new Animated.Value(0),
+			webView: '',
 		};
 		
 		this.renderrListItem = this.renderListItem.bind(this);
@@ -249,11 +250,23 @@ export default class App extends React.Component {
 			}
 		});
 		this.loadDataList();
+		BackHandler.addEventListener('hardwareBackPress', this.backHandler);
 	}
 	
 	componentWillUnmount() {
 		this.keyboardDidShowSub.remove();
 		this.keyboardDidHideSub.remove();
+		BackHandler.removeEventListener('hardwareBackPress', this.backHandler);
+	}
+	
+	backHandler = () => {
+		this.state.webview_ref.current.goBack();
+		if(this.state.canGoBack == '') {
+			this.setState({
+				webView: '',
+			});
+		}
+		return true;
 	}
 	
 	loadDataList = () => {
@@ -279,13 +292,16 @@ export default class App extends React.Component {
 	}
 
 	onPressLearnMore = (articles_link) => {
-		Linking.openURL(articles_link);
+		this.setState({
+			webView: articles_link,
+			webview_ref: React.createRef()
+		});
 	}
 	
 	renderListItem = (item) => {
 		this.count = this.count + 1;
 		return (
-			<View style={styles.container}>
+			<View>
 				<View style={this.count % 2 == 0 ? styles.title_cont_odd : styles.title_cont_even}>
 					<View>
 						<Text style={this.count % 2 == 0 ? styles.title_odd : styles.title_even}>{item.item.articles_title} </Text>
@@ -377,7 +393,7 @@ export default class App extends React.Component {
 			});
 			return;
 		}
-		if(this.state.passwordNotMatch == false && this.state.userExists == false) {
+		if(this.state.passwordNotMatch == '') {
 			fetch('https://meningococcal-distr.000webhostapp.com/register.php?usr='+this.state.reg_usr+'&pwd='+this.state.reg_pwd+'&email='+this.state.reg_email)
 				.then((response) => response.json())
 				.then((responseJson) => {
@@ -484,6 +500,15 @@ export default class App extends React.Component {
 	}
 	
 	render() {
+		if(this.state.webView != '') {
+			return(<WebView
+						source={{uri: this.state.webView}}
+						ref={this.state.webview_ref}
+						style={{marginTop: 20}}
+						onNavigationStateChange={(navState) => { this.state.canGoBack = navState.canGoBack; }}
+					  />);
+			
+		}
 		if(this.loaded == false) {
 			return <Image
 						style={styles.headerImg}
@@ -534,7 +559,6 @@ export default class App extends React.Component {
 							data={this.state.dataSource}
 							keyExtractor={this.keyExtractor}
 							renderItem={this.renderListItem}
-							loading={this.state.loading}
 						  />
 					</ScrollView>
 					<View style={this.state.loading ? styles.loading : styles.notLoading}>
