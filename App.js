@@ -6,73 +6,56 @@ import FontAwesome, { Icons } from "react-native-fontawesome";
 const { State: TextInputState } = TextInput;
 
 const LoginForm = ({states, handleChange, login, register_form}) => {
-	const gradientHeight=500;
-	const gradientBackground  = 'black';
-	const data = Array.from({ length: gradientHeight });
 	return (
 		<View style={{flex:1}}>
-			{data.map((_, i) => (
-				<View
-					key={i}
-					style={{
-						position: 'absolute',
-						backgroundColor: gradientBackground,
-						height: 1,
-						bottom: (gradientHeight - i),
-						right: 0,
-						left: 0,
-						zIndex: 2,
-						marginBottom: -2,
-						opacity: (1 / gradientHeight) * (i + 1)
-					}}
-				/>
-			))}
 			<View style={styles.loginRegisterCont}>
 				<View style={styles.logImg}>
 					<Image
 						style={styles.loginRegisterImg}
-					  source={require('./img/balcony-life-person-103127.jpg')}
+					  source={require('./img/adult-beautiful-brunette-1089164.jpg')}
 					/>
 				</View>
 				<View style={styles.loginRegisterMenu}>
-					<View>{states.loginFailed ? <Text style={styles.regTextField}>Login ungültig</Text> : null}</View>
-					<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-						<Image
-							style={styles.fieldIcon}
-							source={require('./img/icons8-name-50.png')}
-						/>
-						<TextInput placeholder="Benutzername" style={styles.field} value={states.usr} onChange={(event) => {handleChange(event, 'usr')}}></TextInput>
-					</View>
-					<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 10}}>
-						<Image
-							style={styles.fieldIcon}
-							source={require('./img/icons8-password-50.png')}
-						/>
-						<TextInput placeholder="Passwort" style={styles.field} secureTextEntry={true} value={states.pwd} onChange={(event) => {handleChange(event, 'pwd')}}></TextInput>
-					</View>
-					<View style={styles.button_login}>
-						<View style={styles.button_log}>
-							<TouchableOpacity
-								onPress={() => {login()}}
-							>
-								<Text style={styles.btn}>Anmelden</Text>
-							</TouchableOpacity>
+					<View style={styles.border}>
+						<View style={styles.error}>{states.loginFailed ? <Text style={styles.regTextField}>Login ungültig</Text> : null}</View>
+						<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+							<Image
+								style={styles.fieldIcon}
+								source={require('./img/icons8-name-50.png')}
+							/>
+							<TextInput placeholder="Benutzername" style={styles.field} value={states.usr} onChange={(event) => {handleChange(event, 'usr')}}></TextInput>
 						</View>
-						<View style={styles.textReg}>
-							<Text style={{fontSize: 18, color: '#FFFFFF'}}>Nicht registiert?</Text>
-							<TouchableOpacity
-								onPress={() => {register_form()}}
-							>
-								<Text style={{fontSize: 18, color: '#999900'}}>Registrieren</Text>
-							</TouchableOpacity>
+						<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 10}}>
+							<Image
+								style={styles.fieldIcon}
+								source={require('./img/icons8-password-50.png')}
+							/>
+							<TextInput placeholder="Passwort" style={styles.field} secureTextEntry={true} value={states.pwd} onChange={(event) => {handleChange(event, 'pwd')}}></TextInput>
 						</View>
-						<View style={styles.textReg}>
-							<Text style={{fontSize: 18, color: '#FFFFFF'}}>Passwort vergessen?</Text>
-							<TouchableOpacity
-								onPress={() => {register_form()}}
-							>
-								<Text style={{fontSize: 18, color: '#999900'}}>Konto wiederherstellen</Text>
-							</TouchableOpacity>
+						<View style={styles.button_login}>
+							<View style={styles.button_log}>
+								<TouchableOpacity
+									onPress={() => {login()}}
+								>
+									<Text style={styles.btn}>Anmelden</Text>
+								</TouchableOpacity>
+							</View>
+							<View style={styles.textReg}>
+								<Text style={{fontSize: 18, color: '#FFFFFF'}}>Nicht registiert?</Text>
+								<TouchableOpacity
+									onPress={() => {register_form()}}
+								>
+									<Text style={{fontSize: 18, color: '#999900'}}>Registrieren</Text>
+								</TouchableOpacity>
+							</View>
+							<View style={styles.textReg}>
+								<Text style={{fontSize: 18, color: '#FFFFFF'}}>Passwort vergessen?</Text>
+								<TouchableOpacity
+									onPress={() => {register_form()}}
+								>
+									<Text style={{fontSize: 18, color: '#999900'}}>Konto wiederherstellen</Text>
+								</TouchableOpacity>
+							</View>
 						</View>
 					</View>
 				</View>
@@ -87,86 +70,69 @@ const LoginForm = ({states, handleChange, login, register_form}) => {
 }
 	
 const RegisterForm = ({states, handleChange, register, cancel_reg}) => {
-	const gradientHeight=500;
-	const gradientBackground  = 'black';
-	const data = Array.from({ length: gradientHeight });
 	const { shift } = states;
 	return (
 		<View style={{flex:1}}>
-			{data.map((_, i) => (
-				<View
-					key={i}
-					style={{
-						position: 'absolute',
-						backgroundColor: gradientBackground,
-						height: 1,
-						bottom: (gradientHeight - i),
-						right: 0,
-						left: 0,
-						zIndex: 2,
-						marginBottom: -2,
-						opacity: (1 / gradientHeight) * (i + 1)
-					}}
-				/>
-			))}
 			<Animated.View style={[styles.container, { transform: [{translateY: shift}] }]}>
 			<View style={styles.loginRegisterCont}>
 				<View style={styles.logImg}>
 					<Image
 						style={styles.loginRegisterImg}
-					  source={require('./img/balcony-life-person-103127.jpg')}
+					  source={require('./img/adult-beautiful-brunette-1089164.jpg')}
 					/>
 				</View>
 				<View style={styles.loginRegisterMenu}>
-					<View>{states.errorReg ? <Text style={styles.regTextField}>Füllen Sie alle Felder aus</Text> : null}</View>
-						<View style={{flexDirection: 'column'}}>
-							<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-								<Image
-									style={styles.fieldIcon}
-									source={require('./img/icons8-name-50.png')}
-								/>
-								<TextInput placeholder="Benutzername" style={styles.field} value={states.reg_usr} onChange={(event) => {handleChange(event, 'reg_usr')}}></TextInput>
-							</View>
-							<View>{states.userExists ? <Text style={styles.warningReg}>Benutzer existiert bereits</Text> : null}</View>
-						</View>	
-					<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 10}}>
-						<Image
-							style={styles.fieldIcon}
-							source={require('./img/icons8-password-50.png')}
-						/>
-						<TextInput placeholder="Passwort" style={styles.field} secureTextEntry={true} value={states.reg_pwd} onChange={(event) => {handleChange(event, 'reg_pwd')}}></TextInput>
-					</View>
-					<View style={{flexDirection: 'column'}}>
+					<View style={styles.border}>
+						<View style={styles.error}>{states.errorReg ? <Text style={styles.regTextField}>Füllen Sie alle Felder aus</Text> : null}</View>
+							<View style={{flexDirection: 'column'}}>
+								<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+									<Image
+										style={styles.fieldIcon}
+										source={require('./img/icons8-name-50.png')}
+									/>
+									<TextInput placeholder="Benutzername" style={styles.field} value={states.reg_usr} onChange={(event) => {handleChange(event, 'reg_usr')}}></TextInput>
+								</View>
+								<View style={styles.error}>{states.userExists ? <Text style={styles.warningReg}>Benutzer existiert bereits</Text> : null}</View>
+							</View>	
 						<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 10}}>
 							<Image
 								style={styles.fieldIcon}
 								source={require('./img/icons8-password-50.png')}
 							/>
-							<TextInput placeholder="Passwort wiederholen" style={styles.field} secureTextEntry={true} value={states.reg_pwd_rep} onChange={(event) => {handleChange(event, 'reg_pwd_rep')}}></TextInput>
+							<TextInput placeholder="Passwort" style={styles.field} secureTextEntry={true} value={states.reg_pwd} onChange={(event) => {handleChange(event, 'reg_pwd')}}></TextInput>
 						</View>
-						<View>{states.passwordNotMatch ? <Text style={styles.warningReg}>Passwörter stimmen nicht überrein!</Text> : null}</View>
-					</View>
-					<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 10}}>
-						<Image
-							style={styles.fieldIcon}
-							source={require('./img/icons8-email-50.png')}
-						/>
-						<TextInput placeholder="E-Mail" style={styles.field} value={states.reg_email} onChange={(event) => {handleChange(event, 'reg_email')}}></TextInput>
-					</View>
-					<View style={styles.button_login}>
-						<View style={styles.button_log}>
-							<TouchableOpacity
-								onPress={() => {register()}}
-							>
-								<Text style={styles.btn}>Registrieren</Text>
-							</TouchableOpacity>
+						<View style={{flexDirection: 'column'}}>
+							<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 10}}>
+								<Image
+									style={styles.fieldIcon}
+									source={require('./img/icons8-password-50.png')}
+								/>
+								<TextInput placeholder="Passwort wiederholen" style={styles.field} secureTextEntry={true} value={states.reg_pwd_rep} onChange={(event) => {handleChange(event, 'reg_pwd_rep')}}></TextInput>
+							</View>
+							<View style={styles.error}>{states.passwordNotMatch ? <Text style={styles.warningReg}>Passwörter stimmen nicht überrein!</Text> : null}</View>
 						</View>
-						<View style={styles.button_reg}>
-							<TouchableOpacity
-								onPress={() => {cancel_reg()}}
-							>
-								<Text style={styles.btn}>Abbrechen</Text>
-							</TouchableOpacity>
+						<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 10}}>
+							<Image
+								style={styles.fieldIcon}
+								source={require('./img/icons8-email-50.png')}
+							/>
+							<TextInput placeholder="E-Mail" style={styles.field} value={states.reg_email} onChange={(event) => {handleChange(event, 'reg_email')}}></TextInput>
+						</View>
+						<View style={styles.button_login}>
+							<View style={styles.button_log}>
+								<TouchableOpacity
+									onPress={() => {register()}}
+								>
+									<Text style={styles.btn}>Registrieren</Text>
+								</TouchableOpacity>
+							</View>
+							<View style={styles.button_reg}>
+								<TouchableOpacity
+									onPress={() => {cancel_reg()}}
+								>
+									<Text style={styles.btn}>Abbrechen</Text>
+								</TouchableOpacity>
+							</View>
 						</View>
 					</View>
 				</View>
@@ -205,6 +171,7 @@ export default class App extends React.Component {
 			passwordNotMatch: false,
 			shift: new Animated.Value(0),
 			webView: '',
+			webViewTitle: '',
 		};
 		
 		this.renderrListItem = this.renderListItem.bind(this);
@@ -215,6 +182,7 @@ export default class App extends React.Component {
 		this.login = this.login.bind(this);
 		this.register = this.register.bind(this);
 		this.handleChange = this.handleChange.bind(this);
+		this.backMain = this.backMain.bind(this);
 		this.count = 0;
 		this.loaded = false;
 	}
@@ -269,6 +237,12 @@ export default class App extends React.Component {
 		return true;
 	}
 	
+	backMain = () => {
+		this.setState({
+			webView: '',
+		});
+	}
+	
 	loadDataList = () => {
 		this.setState({
 			loading: true,
@@ -291,10 +265,11 @@ export default class App extends React.Component {
 			});
 	}
 
-	onPressLearnMore = (articles_link) => {
+	onPressLearnMore = (articles_link, articles_title) => {
 		this.setState({
 			webView: articles_link,
-			webview_ref: React.createRef()
+			webview_ref: React.createRef(),
+			webViewTitle: articles_title
 		});
 	}
 	
@@ -313,7 +288,7 @@ export default class App extends React.Component {
 				<View style={styles.content_cont}>
 					<Text style={this.count % 2 == 0 ? styles.content_odd : styles.content_even}>{item.item.articles_text}</Text>
 					<View style={styles.button_cont}>
-						<Button title='Weiter' onPress={() => this.onPressLearnMore(item.item.articles_link)} color='#999900' style={styles.button_more} />
+						<Button title='Weiter' onPress={() => this.onPressLearnMore(item.item.articles_link, item.item.articles_title)} color='#999900' style={styles.button_more} />
 					</View>
 				</View>
 			</View>
@@ -501,12 +476,28 @@ export default class App extends React.Component {
 	
 	render() {
 		if(this.state.webView != '') {
-			return(<WebView
+			return(
+				<View style={styles.webviewWrap}>
+					<View style={styles.webviewHeader}>
+						<View>
+							<TouchableOpacity
+								onPress={this.backMain}
+								style={styles.webviewBtnWrap}
+							>
+								<Text style={styles.webviewBtn}>Zürück</Text>
+							</TouchableOpacity>
+						</View>
+						<View style={styles.webviewTitleWrap}>
+							<Text style={styles.webviewTitle}>{this.state.webViewTitle}</Text>
+						</View>
+					</View>
+					<WebView
 						source={{uri: this.state.webView}}
 						ref={this.state.webview_ref}
-						style={{marginTop: 20}}
+						style={{marginTop: 74}}
 						onNavigationStateChange={(navState) => { this.state.canGoBack = navState.canGoBack; }}
-					  />);
+					/>
+				</View>);
 			
 		}
 		if(this.loaded == false) {
@@ -573,7 +564,6 @@ export default class App extends React.Component {
 
 const styles = StyleSheet.create({
 	container: {
-		backgroundColor: 'gray',
 		flex: 1,
 		height: '100%',
 		justifyContent: 'space-around',
@@ -719,7 +709,12 @@ const styles = StyleSheet.create({
 		flex: 1,
 		alignItems: 'center',
 		justifyContent: 'center',
-		alignSelf:'stretch',
+		alignSelf: 'stretch',
+		position: 'absolute',
+		top: 0,
+		left: 0,
+		right: 0,
+		bottom: 0,
 	},
 	
 	loginRegisterImg: {
@@ -740,7 +735,7 @@ const styles = StyleSheet.create({
 	},
 	
 	field: {
-		backgroundColor: 'rgba(0, 0, 0, 0.5)',
+		backgroundColor: 'rgba(255, 255, 255, 0.5)',
 		width: 300,
 		borderRadius: 20,
 		height: 50,
@@ -752,6 +747,7 @@ const styles = StyleSheet.create({
 	
 	button_login: {
 		flexDirection: 'column',
+		alignItems: 'center',
 	},
 	
 	btn: {
@@ -769,7 +765,6 @@ const styles = StyleSheet.create({
 	
 	logImg: {
 		justifyContent:'space-around',
-		height: 250,
 	},
 	
 	loading: {
@@ -804,7 +799,8 @@ const styles = StyleSheet.create({
 		position: 'absolute',
 		left: 7,
 		height: 35, 
-		resizeMode: 'contain'
+		resizeMode: 'contain',
+		zIndex: 10,
 	},
 	
 	textReg: {
@@ -817,5 +813,62 @@ const styles = StyleSheet.create({
 		textAlign: 'center',
 		alignItems: 'center',
 		color: '#FF5722'
+	},
+	
+	border: {
+		borderWidth: 2,
+		padding: 20,
+		backgroundColor: 'rgba(0,0,0,0.5)',
+	},
+	
+	error: {
+		alignItems: 'center',
+	},
+	
+	webviewWrap: {
+		justifyContent: 'center',
+		flexDirection: 'column',
+		flex: 1,
+	},
+	
+	webviewHeader: {
+		position: 'absolute', 
+		top: 24,
+		height: 50,
+		backgroundColor: '#000000',
+		zIndex: 9999999,
+		flexDirection: 'row',	
+		width: '100%',	
+	},
+	
+	webviewBtnWrap: {
+		backgroundColor: '#000000',
+		width: 120,
+		height: 50,
+		justifyContent: 'center',
+	},
+	
+	webviewBtn: {
+		left: 20,
+		height: 30,
+		borderRadius: 20,
+		backgroundColor: '#999900',
+		fontSize: 20,
+		justifyContent: 'center',
+		color: '#FFFFFF',
+		width: 100,
+		textAlign: 'center',
+	},
+	
+	webviewTitleWrap: {
+		backgroundColor: '#000000',
+		width: Dimensions.get('window').width-120,
+		height: 50,
+		justifyContent: 'center',
+		alignItems: 'center',
+	},
+	
+	webviewTitle: {
+		color: '#FFFFFF',
 	}
 });
