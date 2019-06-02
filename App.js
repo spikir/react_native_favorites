@@ -205,7 +205,7 @@ export default class App extends React.Component {
 				this.setState({
 					amount: responseJson[0]['amount']
 				})
-		  });
+		});
 		Promise.all([
 			SecureStore.getItemAsync('usr'),
 			SecureStore.getItemAsync('pwd')
@@ -507,13 +507,28 @@ export default class App extends React.Component {
 	
 	pressFavorites = () => {
 		if(this.state.typeLocation == 'main') {
+			fetch('https://meningococcal-distr.000webhostapp.com/total_fav.php?usr_id='+this.state.usr_id)
+				.then((response) => response.json())
+				.then((responseJson) => {
+					this.setState({
+						amount: responseJson[0]['amount'],
+					})
+			});
 			this.setState({
 				typeLocation: 'favorites',
 				textLocation: 'Home',
+				page: 1,
 			}, function() {
 				this.loadDataList(this.state.typeLocation);
 			});
 		} else {
+			fetch('https://meningococcal-distr.000webhostapp.com/total.php')
+				.then((response) => response.json())
+				.then((responseJson) => {
+					this.setState({
+						amount: responseJson[0]['amount']
+					})
+			});
 			this.setState({
 				typeLocation: 'main',
 				textLocation: 'Favoriten',
