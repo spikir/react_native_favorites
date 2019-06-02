@@ -172,6 +172,8 @@ export default class App extends React.Component {
 			shift: new Animated.Value(0),
 			webView: '',
 			webViewTitle: '',
+			typeLocation: 'main',
+			textLocation: 'Favoriten',
 		};
 		
 		this.renderrListItem = this.renderListItem.bind(this);
@@ -217,7 +219,7 @@ export default class App extends React.Component {
 				});	
 			}
 		});
-		this.loadDataList();
+		this.loadDataList(this.state.typeLocation);
 		BackHandler.addEventListener('hardwareBackPress', this.backHandler);
 	}
 	
@@ -228,6 +230,9 @@ export default class App extends React.Component {
 	}
 	
 	backHandler = () => {
+		if(this.state.webView == '') {
+			return;
+		}
 		this.state.webview_ref.current.goBack();
 		if(this.state.canGoBack == '') {
 			this.setState({
@@ -243,11 +248,11 @@ export default class App extends React.Component {
 		});
 	}
 	
-	loadDataList = () => {
+	loadDataList = (type) => {
 		this.setState({
 			loading: true,
 		});
-		return fetch('https://meningococcal-distr.000webhostapp.com/lists.php?page='+this.state.page)
+		return fetch('https://meningococcal-distr.000webhostapp.com/lists.php?page='+this.state.page+'&type='+type)
 			.then((response) => response.json())
 			.then((responseJson) => {
 				this.setState({
@@ -273,6 +278,21 @@ export default class App extends React.Component {
 		});
 	}
 	
+	async favorite (usr_id, articles_id, favorites_id) {
+		if(favorites_id == null) {
+			await fetch('https://meningococcal-distr.000webhostapp.com/favorites.php?usr='+usr_id+'&article='+articles_id)
+				.then((response) => response.json())
+				.then((responseJson) => {
+				});
+		} else {
+			await fetch('https://meningococcal-distr.000webhostapp.com/delete_favorites.php?fav_id='+favorites_id)
+				.then((response) => response.json())
+				.then((responseJson) => {
+				});
+		}
+		this.loadDataList(this.state.typeLocation);
+	}
+	
 	renderListItem = (item) => {
 		this.count = this.count + 1;
 		return (
@@ -289,6 +309,16 @@ export default class App extends React.Component {
 					<Text style={this.count % 2 == 0 ? styles.content_odd : styles.content_even}>{item.item.articles_text}</Text>
 					<View style={styles.button_cont}>
 						<Button title='Weiter' onPress={() => this.onPressLearnMore(item.item.articles_link, item.item.articles_title)} color='#999900' style={styles.button_more} />
+						<View style={styles.heart}>
+							<TouchableOpacity
+								onPress={() => this.favorite(this.state.usr_id, item.item.articles_id, item.item.favorites_id)}
+							>
+								<Image
+								source={item.item.favorites_id == null ? require('./img/icons8-heart-outline-64.png') : require('./img/icons8-heart-outline-64-full.png')}
+							/>
+							</TouchableOpacity>
+							
+						</View>
 					</View>
 				</View>
 			</View>
@@ -302,7 +332,7 @@ export default class App extends React.Component {
 			this.setState({
 				page: this.state.page+1
 			}, () => {
-				this.loadDataList();
+				this.loadDataList(this.state.typeLocation);
 			});
 		}
 	}
@@ -312,7 +342,7 @@ export default class App extends React.Component {
 			this.setState({
 				page: this.state.page-1
 			}, () => {
-				this.loadDataList();
+				this.loadDataList(this.state.typeLocation);
 			});
 		}
 	}
@@ -324,11 +354,12 @@ export default class App extends React.Component {
 		fetch('https://meningococcal-distr.000webhostapp.com/login.php?usr='+this.state.usr+'&pwd='+this.state.pwd)
 			.then((response) => response.json())
 			.then((responseJson) => {
-				if(responseJson == true) {
+				if(responseJson != false) {
 					this.setState({
 						showLoginRegisterMenu: false,
 						showRegisterForm: false,
 						loading: false,
+						usr_id: responseJson,
 					}, function() {
 						SecureStore.setItemAsync('usr', this.state.usr);
 						SecureStore.setItemAsync('pwd', this.state.pwd);
@@ -474,6 +505,24 @@ export default class App extends React.Component {
 		).start();
 	}
 	
+	pressFavorites = () => {
+		if(this.state.typeLocation == 'main') {
+			this.setState({
+				typeLocation: 'favorites',
+				textLocation: 'Home',
+			}, function() {
+				this.loadDataList(this.state.typeLocation);
+			});
+		} else {
+			this.setState({
+				typeLocation: 'main',
+				textLocation: 'Favoriten',
+			}, function() {
+				this.loadDataList(this.state.typeLocation);
+			});
+		}
+	}
+	
 	render() {
 		if(this.state.webView != '') {
 			return(
@@ -537,7 +586,7 @@ export default class App extends React.Component {
 							</View>
 							<View style={this.state.showMenu == true ? styles.userMenuShow : styles.userMenuHide}>
 								<Text style={styles.userMenu}>User</Text>
-								<Text style={styles.userMenu}>Favorites</Text>
+								<Text style={styles.userMenu} onPress={this.pressFavorites}>{this.state.textLocation}</Text>
 								<Text style={styles.userMenu} onPress={this.logout}>Logout</Text>
 							</View>
 						</View>
@@ -693,6 +742,7 @@ const styles = StyleSheet.create({
 	button_cont: {
 		justifyContent: 'center',
 		alignItems: 'center',
+		backgroundColor: '#FFFFFF',
 	},
 	
 	button_more: {
@@ -870,5 +920,12 @@ const styles = StyleSheet.create({
 	
 	webviewTitle: {
 		color: '#FFFFFF',
+	},
+	
+	heart: {
+		width: '100%',
+		justifyContent: 'center',
+		alignItems: 'center',
+		flex: 1,
 	}
 });
