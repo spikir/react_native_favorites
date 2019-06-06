@@ -1,5 +1,5 @@
 import React from 'react';
-import { BackHandler, WebView, TextInput, ScrollView, StyleSheet, View, Text, Image, TouchableOpacity, FlatList, Button, Linking, Animated, Dimensions, Keyboard, UIManager } from 'react-native';
+import { Easing, BackHandler, WebView, TextInput, ScrollView, StyleSheet, View, Text, Image, TouchableOpacity, FlatList, Button, Linking, Animated, Dimensions, Keyboard, UIManager } from 'react-native';
 import { Font, SecureStore } from 'expo';
 import FontAwesome, { Icons } from "react-native-fontawesome";
 
@@ -176,6 +176,8 @@ export default class App extends React.Component {
 			textLocation: 'Favoriten',
 		};
 		
+		this.animatedValue = new Animated.Value(0);
+		
 		this.renderrListItem = this.renderListItem.bind(this);
 		this.loadDataList = this.loadDataList.bind(this);
 		this.addPage = this.addPage.bind(this);
@@ -221,12 +223,25 @@ export default class App extends React.Component {
 		});
 		this.loadDataList(this.state.typeLocation);
 		BackHandler.addEventListener('hardwareBackPress', this.backHandler);
+		this.animate();
 	}
 	
 	componentWillUnmount() {
 		this.keyboardDidShowSub.remove();
 		this.keyboardDidHideSub.remove();
 		BackHandler.removeEventListener('hardwareBackPress', this.backHandler);
+	}
+	
+	animate () {
+		this.animatedValue.setValue(0);
+		Animated.timing(
+			this.animatedValue,
+			{
+				toValue: 1,
+				duration: 2000,
+				easing: Easing.linear
+			}
+		).start();
 	}
 	
 	backHandler = () => {
@@ -421,8 +436,16 @@ export default class App extends React.Component {
 	}
 
 	showMenu = () => {
+		this.animate();
 		this.setState({
 			showMenu: !this.state.showMenu,
+		}, function() {
+			if(this.state.showMenu == false) {
+				Animated.timing(
+					this.animatedValue
+				).stop();
+				this.animatedValue.resetAnimation();
+			}
 		});
 	}
 	
@@ -498,7 +521,7 @@ export default class App extends React.Component {
 		Animated.timing(
 			this.state.shift,
 			{
-				toValue: 0,
+				toValue: 1,
 				duration: 1000,
 				useNativeDriver: true,
 			}
@@ -532,6 +555,7 @@ export default class App extends React.Component {
 			this.setState({
 				typeLocation: 'main',
 				textLocation: 'Favoriten',
+				page: 1,
 			}, function() {
 				this.loadDataList(this.state.typeLocation);
 			});
@@ -584,7 +608,12 @@ export default class App extends React.Component {
 						register={this.register}
 						cancel_reg={this.cancel_reg}/>);
 		}
-		
+		if(this.state.showMenu == true) {
+			var movingMargin = this.animatedValue.interpolate({
+				inputRange: [0, 1],
+				outputRange: [-250, 1]
+			});
+		}
 		return (<View>
 					<ScrollView style={styles.wrapper} stickyHeaderIndices={[1]}>
 						<View style={styles.header}>
@@ -599,11 +628,11 @@ export default class App extends React.Component {
 									</Text>
 								</TouchableOpacity>
 							</View>
-							<View style={this.state.showMenu == true ? styles.userMenuShow : styles.userMenuHide}>
+							<Animated.View style={this.state.showMenu == true ? [styles.userMenuShow, {marginLeft: movingMargin}] : styles.userMenuHide}>
 								<Text style={styles.userMenu}>User</Text>
 								<Text style={styles.userMenu} onPress={this.pressFavorites}>{this.state.textLocation}</Text>
 								<Text style={styles.userMenu} onPress={this.logout}>Logout</Text>
-							</View>
+							</Animated.View>
 						</View>
 						<View style={styles.pagination}>
 							<View style={styles.menu}>
@@ -672,7 +701,7 @@ const styles = StyleSheet.create({
 	},
 	
 	userMenuHide: {
-		display: 'none'
+		display: 'none',
 	},
 	
 	userMenu: {
