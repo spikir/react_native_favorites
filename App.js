@@ -5,6 +5,84 @@ import FontAwesome, { Icons } from "react-native-fontawesome";
 
 const { State: TextInputState } = TextInput;
 
+const EditProfileForm = ({states, handleChange, change, cancel_change}) => {
+	const { shift } = states;
+	return (
+		<View style={{flex:1}}>
+			<Animated.View style={[styles.container, { transform: [{translateY: shift}] }]}>
+			<View style={styles.loginRegisterCont}>
+				<View style={styles.logImg}>
+					<Image
+						style={styles.loginRegisterImg}
+					  source={require('./img/adult-beautiful-brunette-1089164.jpg')}
+					/>
+				</View>
+				<View style={styles.loginRegisterMenu}>
+					<View style={styles.border}>
+						<View style={styles.error}>{states.errorReg ? <Text style={styles.regTextField}>Füllen Sie alle Felder aus</Text> : null}</View>
+							<View style={{flexDirection: 'column'}}>
+								<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+									<Image
+										style={styles.fieldIcon}
+										source={require('./img/icons8-email-50.png')}
+									/>
+									<TextInput placeholder="E-Mail" style={styles.field} autoCapitalize={'none'} autoCorrect={false} value={states.edit_usr_email} onChange={(event) => {handleChange(event, 'edit_usr_email')}}></TextInput>
+								</View>
+								<View style={styles.error}>{states.mailExists ? <Text style={styles.warningReg}>E-Mail ist bereits registriert</Text> : null}</View>
+							</View>	
+						<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 10}}>
+							<Image
+								style={styles.fieldIcon}
+								source={require('./img/icons8-password-50.png')}
+							/>
+							<TextInput placeholder="Altes Passwort" style={styles.field} autoCapitalize={'none'} autoCorrect={false} secureTextEntry={true} value={states.edit_usr_pwd_old} onChange={(event) => {handleChange(event, 'edit_usr_pwd')}}></TextInput>
+						</View>
+						<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 10}}>
+							<Image
+								style={styles.fieldIcon}
+								source={require('./img/icons8-password-50.png')}
+							/>
+							<TextInput placeholder="Neues Passwort" style={styles.field} autoCapitalize={'none'} autoCorrect={false} secureTextEntry={true} value={states.edit_usr_pwd} onChange={(event) => {handleChange(event, 'edit_usr_pwd')}}></TextInput>
+						</View>
+						<View style={{flexDirection: 'column'}}>
+							<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 10}}>
+								<Image
+									style={styles.fieldIcon}
+									source={require('./img/icons8-password-50.png')}
+								/>
+								<TextInput placeholder="Passwort wiederholen" style={styles.field} autoCapitalize={'none'} autoCorrect={false} secureTextEntry={true} value={states.edit_usr_pwd_rep} onChange={(event) => {handleChange(event, 'edit_usr_pwd_rep')}}></TextInput>
+							</View>
+							<View style={styles.error}>{states.passwordNotMatch ? <Text style={styles.warningReg}>Passwörter stimmen nicht überrein!</Text> : null}</View>
+						</View>
+						<View style={styles.button_login}>
+							<View style={styles.button_log}>
+								<TouchableOpacity
+									onPress={() => {change()}}
+								>
+									<Text style={styles.btn}>Ändern</Text>
+								</TouchableOpacity>
+							</View>
+							<View style={styles.button_reg}>
+								<TouchableOpacity
+									onPress={() => {cancel_change()}}
+								>
+									<Text style={styles.btn}>Abbrechen</Text>
+								</TouchableOpacity>
+							</View>
+						</View>
+					</View>
+				</View>
+			</View>
+			</Animated.View>
+			<View style={states.loading ? styles.loading : styles.notLoading}>
+				<Image 
+					style={styles.loadingImg}
+					source={require('./img/transparent-background-loading-3.gif')}
+				/>
+			</View>
+		</View>);
+}
+
 const LoginForm = ({states, handleChange, login, register_form}) => {
 	return (
 		<View style={{flex:1}}>
@@ -23,14 +101,14 @@ const LoginForm = ({states, handleChange, login, register_form}) => {
 								style={styles.fieldIcon}
 								source={require('./img/icons8-name-50.png')}
 							/>
-							<TextInput placeholder="Benutzername" style={styles.field} value={states.usr} onChange={(event) => {handleChange(event, 'usr')}}></TextInput>
+							<TextInput placeholder="Benutzername" style={styles.field} autoCapitalize={'none'} autoCorrect={false} value={states.usr} onChange={(event) => {handleChange(event, 'usr')}}></TextInput>
 						</View>
 						<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 10}}>
 							<Image
 								style={styles.fieldIcon}
 								source={require('./img/icons8-password-50.png')}
 							/>
-							<TextInput placeholder="Passwort" style={styles.field} secureTextEntry={true} value={states.pwd} onChange={(event) => {handleChange(event, 'pwd')}}></TextInput>
+							<TextInput placeholder="Passwort" style={styles.field} autoCapitalize={'none'} autoCorrect={false} secureTextEntry={true} value={states.pwd} onChange={(event) => {handleChange(event, 'pwd')}}></TextInput>
 						</View>
 						<View style={styles.button_login}>
 							<View style={styles.button_log}>
@@ -90,7 +168,7 @@ const RegisterForm = ({states, handleChange, register, cancel_reg}) => {
 										style={styles.fieldIcon}
 										source={require('./img/icons8-name-50.png')}
 									/>
-									<TextInput placeholder="Benutzername" style={styles.field} value={states.reg_usr} onChange={(event) => {handleChange(event, 'reg_usr')}}></TextInput>
+									<TextInput placeholder="Benutzername" style={styles.field} autoCapitalize={'none'} autoCorrect={false} value={states.reg_usr} onChange={(event) => {handleChange(event, 'reg_usr')}}></TextInput>
 								</View>
 								<View style={styles.error}>{states.userExists ? <Text style={styles.warningReg}>Benutzer existiert bereits</Text> : null}</View>
 							</View>	
@@ -99,7 +177,7 @@ const RegisterForm = ({states, handleChange, register, cancel_reg}) => {
 								style={styles.fieldIcon}
 								source={require('./img/icons8-password-50.png')}
 							/>
-							<TextInput placeholder="Passwort" style={styles.field} secureTextEntry={true} value={states.reg_pwd} onChange={(event) => {handleChange(event, 'reg_pwd')}}></TextInput>
+							<TextInput placeholder="Passwort" style={styles.field} autoCapitalize={'none'} autoCorrect={false} secureTextEntry={true} value={states.reg_pwd} onChange={(event) => {handleChange(event, 'reg_pwd')}}></TextInput>
 						</View>
 						<View style={{flexDirection: 'column'}}>
 							<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 10}}>
@@ -107,7 +185,7 @@ const RegisterForm = ({states, handleChange, register, cancel_reg}) => {
 									style={styles.fieldIcon}
 									source={require('./img/icons8-password-50.png')}
 								/>
-								<TextInput placeholder="Passwort wiederholen" style={styles.field} secureTextEntry={true} value={states.reg_pwd_rep} onChange={(event) => {handleChange(event, 'reg_pwd_rep')}}></TextInput>
+								<TextInput placeholder="Passwort wiederholen" style={styles.field} autoCapitalize={'none'} autoCorrect={false} secureTextEntry={true} value={states.reg_pwd_rep} onChange={(event) => {handleChange(event, 'reg_pwd_rep')}}></TextInput>
 							</View>
 							<View style={styles.error}>{states.passwordNotMatch ? <Text style={styles.warningReg}>Passwörter stimmen nicht überrein!</Text> : null}</View>
 						</View>
@@ -116,7 +194,7 @@ const RegisterForm = ({states, handleChange, register, cancel_reg}) => {
 								style={styles.fieldIcon}
 								source={require('./img/icons8-email-50.png')}
 							/>
-							<TextInput placeholder="E-Mail" style={styles.field} value={states.reg_email} onChange={(event) => {handleChange(event, 'reg_email')}}></TextInput>
+							<TextInput placeholder="E-Mail" style={styles.field} autoCapitalize={'none'} autoCorrect={false} value={states.reg_email} onChange={(event) => {handleChange(event, 'reg_email')}}></TextInput>
 						</View>
 						<View style={styles.button_login}>
 							<View style={styles.button_log}>
@@ -168,6 +246,7 @@ export default class App extends React.Component {
 			showMenu: false,
 			loading: false,
 			userExists: false,
+			emailExists: false,
 			passwordNotMatch: false,
 			shift: new Animated.Value(0),
 			webView: '',
@@ -216,6 +295,7 @@ export default class App extends React.Component {
 				this.setState({
 					usr: responses[0],
 					pwd: responses[1],
+					showLoginRegisterMenu: false,
 				}, function() {
 					this.login();
 				});	
@@ -238,7 +318,7 @@ export default class App extends React.Component {
 			this.animatedValue,
 			{
 				toValue: 1,
-				duration: 2000,
+				duration: 1500,
 				easing: Easing.linear
 			}
 		).start();
@@ -348,6 +428,7 @@ export default class App extends React.Component {
 				page: this.state.page+1
 			}, () => {
 				this.loadDataList(this.state.typeLocation);
+				this.refs._scrollView.scrollTo({x: 0, y: 0, animated: 'true'});
 			});
 		}
 	}
@@ -358,6 +439,7 @@ export default class App extends React.Component {
 				page: this.state.page-1
 			}, () => {
 				this.loadDataList(this.state.typeLocation);
+				this.refs._scrollView.scrollTo({x: 0, y: 0, animated: 'true'});
 			});
 		}
 	}
@@ -374,7 +456,8 @@ export default class App extends React.Component {
 						showLoginRegisterMenu: false,
 						showRegisterForm: false,
 						loading: false,
-						usr_id: responseJson,
+						usr_id: responseJson['usr_id'],
+						email: responseJson['usr_email'],
 					}, function() {
 						SecureStore.setItemAsync('usr', this.state.usr);
 						SecureStore.setItemAsync('pwd', this.state.pwd);
@@ -399,31 +482,33 @@ export default class App extends React.Component {
 			usr: '',
 			pwd: '',
 			userExists: false,
+			emailExists: false,
 		});
 	}
 	
 	register = () => {
 		this.setState({
 			loading: true,
-			userExists: false,
 		});
-		if(this.state.reg_usr == '' || this.state.reg_pwd == '' || this.state.reg_pwd_rep == '' || this.state.reg_email == '') {
-			this.setState({
-				errorReg: true,
-				loading: false,
-			});
-			return;
-		}
-		if(this.state.passwordNotMatch == '') {
-			fetch('https://meningococcal-distr.000webhostapp.com/register.php?usr='+this.state.reg_usr+'&pwd='+this.state.reg_pwd+'&email='+this.state.reg_email)
-				.then((response) => response.json())
-				.then((responseJson) => {
+		if(this.state.userExists ==  false && this.state.emailExists == false) {
+			if(this.state.reg_usr == '' || this.state.reg_pwd == '' || this.state.reg_pwd_rep == '' || this.state.reg_email == '') {
+				this.setState({
+					errorReg: true,
+					loading: false,
 				});
-			this.setState({
-				showRegisterForm: false,
-				showLoginRegisterMenu: true,
-				loading: false,
-			});
+				return;
+			}
+			if(this.state.passwordNotMatch == '') {
+				fetch('https://meningococcal-distr.000webhostapp.com/register.php?usr='+this.state.reg_usr+'&pwd='+this.state.reg_pwd+'&email='+this.state.reg_email)
+					.then((response) => response.json())
+					.then((responseJson) => {
+					});
+				this.setState({
+					showRegisterForm: false,
+					showLoginRegisterMenu: true,
+					loading: false,
+				});
+			}
 		}
 	}
 	
@@ -458,10 +543,12 @@ export default class App extends React.Component {
 			usr: '',
 			pwd: '',
 			showMenu: false,
+			editProfile: false,
 		});
 	}
 	
 	handleChange = (name, e) => {
+		console.log(e);
 		if(e == 'reg_usr') {
 			fetch('https://meningococcal-distr.000webhostapp.com/check_username.php?usr='+name.nativeEvent.text)
 				.then((response) => response.json())
@@ -478,9 +565,28 @@ export default class App extends React.Component {
 					}
 			}).catch((error) => {
 				console.error(error);
-			});;
-		} else if(e == 'reg_pwd' || e == 'reg_pwd_rep') {
-			if(this.state.reg_pwd == name.nativeEvent.text || this.state.reg_pwd_rep == name.nativeEvent.text) {
+			});
+		} else if(e == 'reg_email' || (this.state.email != this.state.edit_usr_email)) {
+			fetch('https://meningococcal-distr.000webhostapp.com/check_email.php?email='+name.nativeEvent.text)
+				.then((response) => response.json())
+				.then((responseJson) => {
+					if(responseJson == true) {
+						this.setState({
+							emailExists: true,
+						});
+						return;
+					} else {
+						this.setState({
+							emailExists: false,
+						});
+					}
+			}).catch((error) => {
+				console.error(error);
+			});
+		} else if(e == 'reg_pwd' || e == 'reg_pwd_rep' || e == 'edit_usr_pwd' || e == 'edit_usr_pwd_rep') {
+			console.log(this.state.edir_usr_pwd);
+			console.log(name.nativeEvent.text);
+			if((this.state.reg_pwd == name.nativeEvent.text || this.state.reg_pwd_rep == name.nativeEvent.text) || (this.state.edit_usr_pwd == name.nativeEvent.text || this.state.edit_usr_pwd_rep == name.nativeEvent.text)) {
 				this.setState({
 					passwordNotMatch: false,
 				});
@@ -521,7 +627,7 @@ export default class App extends React.Component {
 		Animated.timing(
 			this.state.shift,
 			{
-				toValue: 1,
+				toValue: 0,
 				duration: 1000,
 				useNativeDriver: true,
 			}
@@ -538,6 +644,7 @@ export default class App extends React.Component {
 					})
 			});
 			this.setState({
+				editProfile: false,
 				typeLocation: 'favorites',
 				textLocation: 'Home',
 				page: 1,
@@ -553,12 +660,35 @@ export default class App extends React.Component {
 					})
 			});
 			this.setState({
+				editProfile: false,
 				typeLocation: 'main',
 				textLocation: 'Favoriten',
 				page: 1,
 			}, function() {
 				this.loadDataList(this.state.typeLocation);
 			});
+		}
+	}
+	
+	pressEditProfile = () => {
+		this.setState({
+			editProfile: true,
+			edit_usr_email: this.state.email
+		});
+	}
+	
+	cancel_change = () => {
+		this.setState({
+			editProfile: false,
+		});
+	}
+	
+	change = () => {
+		if(this.state.edit_usr_pwd != '' && this.state.edit_usr_pwd_rep != '' && this.state.edit_usr_pwd == this.state.edit_usr_pwd_rep && this.state.edit_usr_pwd_old == this.state.pwd) {
+			fetch('https://meningococcal-distr.000webhostapp.com/edit_profile.php?usr='+this.state.edit_usr_email+'&pwd='+this.state.edit_usr_pwd+'&email='+this.state.usr_id)
+				.then((response) => response.json())
+				.then((responseJson) => {
+				});
 		}
 	}
 	
@@ -608,14 +738,22 @@ export default class App extends React.Component {
 						register={this.register}
 						cancel_reg={this.cancel_reg}/>);
 		}
+		if(this.state.editProfile == true) {
+			return (<EditProfileForm 
+						states={this.state} 
+						handleChange={this.handleChange}
+						change={this.change}
+						cancel_change={this.cancel_change}
+					/>);
+		}
 		if(this.state.showMenu == true) {
 			var movingMargin = this.animatedValue.interpolate({
 				inputRange: [0, 1],
-				outputRange: [-250, 1]
+				outputRange: [-300, 0]
 			});
 		}
 		return (<View>
-					<ScrollView style={styles.wrapper} stickyHeaderIndices={[1]}>
+					<ScrollView style={styles.wrapper} stickyHeaderIndices={[1]} ref="_scrollView">
 						<View style={styles.header}>
 							<Image
 								style={styles.headerImg}
@@ -629,9 +767,9 @@ export default class App extends React.Component {
 								</TouchableOpacity>
 							</View>
 							<Animated.View style={this.state.showMenu == true ? [styles.userMenuShow, {marginLeft: movingMargin}] : styles.userMenuHide}>
-								<Text style={styles.userMenu}>User</Text>
+								<Text style={styles.userMenu} onPress={this.pressEditProfile}>Profil</Text>
 								<Text style={styles.userMenu} onPress={this.pressFavorites}>{this.state.textLocation}</Text>
-								<Text style={styles.userMenu} onPress={this.logout}>Logout</Text>
+								<Text style={styles.userMenu} onPress={this.logout}>Ausloggen</Text>
 							</Animated.View>
 						</View>
 						<View style={styles.pagination}>
@@ -695,6 +833,7 @@ const styles = StyleSheet.create({
 		flexDirection: 'column',
 		alignItems: 'center',
 		height: 300,
+		width: 300,
 		backgroundColor: '#0e1111',
 		paddingLeft: 50,
 		paddingRight: 50,
