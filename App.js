@@ -28,14 +28,14 @@ const EditProfileForm = ({states, handleChange, change, cancel_change}) => {
 									/>
 									<TextInput placeholder="E-Mail" style={styles.field} autoCapitalize={'none'} autoCorrect={false} value={states.edit_usr_email} onChange={(event) => {handleChange(event, 'edit_usr_email')}}></TextInput>
 								</View>
-								<View style={styles.error}>{states.mailExists ? <Text style={styles.warningReg}>E-Mail ist bereits registriert</Text> : null}</View>
+								<View style={styles.error}>{states.emailExists ? <Text style={styles.warningReg}>E-Mail ist bereits registriert</Text> : null}</View>
 							</View>	
 						<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 10}}>
 							<Image
 								style={styles.fieldIcon}
 								source={require('./img/icons8-password-50.png')}
 							/>
-							<TextInput placeholder="Altes Passwort" style={styles.field} autoCapitalize={'none'} autoCorrect={false} secureTextEntry={true} value={states.edit_usr_pwd_old} onChange={(event) => {handleChange(event, 'edit_usr_pwd')}}></TextInput>
+							<TextInput placeholder="Altes Passwort" style={styles.field} autoCapitalize={'none'} autoCorrect={false} secureTextEntry={true} value={states.edit_usr_pwd_old} onChange={(event) => {handleChange(event, 'edit_usr_pwd_old')}}></TextInput>
 						</View>
 						<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 10}}>
 							<Image
@@ -189,12 +189,15 @@ const RegisterForm = ({states, handleChange, register, cancel_reg}) => {
 							</View>
 							<View style={styles.error}>{states.passwordNotMatch ? <Text style={styles.warningReg}>Passwörter stimmen nicht überrein!</Text> : null}</View>
 						</View>
-						<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 10}}>
-							<Image
-								style={styles.fieldIcon}
-								source={require('./img/icons8-email-50.png')}
-							/>
-							<TextInput placeholder="E-Mail" style={styles.field} autoCapitalize={'none'} autoCorrect={false} value={states.reg_email} onChange={(event) => {handleChange(event, 'reg_email')}}></TextInput>
+						<View style={{flexDirection: 'column'}}>
+							<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 10}}>
+								<Image
+									style={styles.fieldIcon}
+									source={require('./img/icons8-email-50.png')}
+								/>
+								<TextInput placeholder="E-Mail" style={styles.field} autoCapitalize={'none'} autoCorrect={false} value={states.reg_email} onChange={(event) => {handleChange(event, 'reg_email')}}></TextInput>
+							</View>
+							<View style={styles.error}>{states.emailExists ? <Text style={styles.warningReg}>Dieses E-Mail ist bereits registriert</Text> : null}</View>
 						</View>
 						<View style={styles.button_login}>
 							<View style={styles.button_log}>
@@ -252,7 +255,6 @@ export default class App extends React.Component {
 			webView: '',
 			webViewTitle: '',
 			typeLocation: 'main',
-			textLocation: 'Favoriten',
 		};
 		
 		this.animatedValue = new Animated.Value(0);
@@ -544,11 +546,11 @@ export default class App extends React.Component {
 			pwd: '',
 			showMenu: false,
 			editProfile: false,
+			typeLocation: 'main',
 		});
 	}
 	
 	handleChange = (name, e) => {
-		console.log(e);
 		if(e == 'reg_usr') {
 			fetch('https://meningococcal-distr.000webhostapp.com/check_username.php?usr='+name.nativeEvent.text)
 				.then((response) => response.json())
@@ -584,8 +586,6 @@ export default class App extends React.Component {
 				console.error(error);
 			});
 		} else if(e == 'reg_pwd' || e == 'reg_pwd_rep' || e == 'edit_usr_pwd' || e == 'edit_usr_pwd_rep') {
-			console.log(this.state.edir_usr_pwd);
-			console.log(name.nativeEvent.text);
 			if((this.state.reg_pwd == name.nativeEvent.text || this.state.reg_pwd_rep == name.nativeEvent.text) || (this.state.edit_usr_pwd == name.nativeEvent.text || this.state.edit_usr_pwd_rep == name.nativeEvent.text)) {
 				this.setState({
 					passwordNotMatch: false,
@@ -635,39 +635,20 @@ export default class App extends React.Component {
 	}
 	
 	pressFavorites = () => {
-		if(this.state.typeLocation == 'main') {
-			fetch('https://meningococcal-distr.000webhostapp.com/total_fav.php?usr_id='+this.state.usr_id)
-				.then((response) => response.json())
-				.then((responseJson) => {
-					this.setState({
-						amount: responseJson[0]['amount'],
-					})
-			});
-			this.setState({
-				editProfile: false,
-				typeLocation: 'favorites',
-				textLocation: 'Home',
-				page: 1,
-			}, function() {
-				this.loadDataList(this.state.typeLocation);
-			});
-		} else {
-			fetch('https://meningococcal-distr.000webhostapp.com/total.php')
-				.then((response) => response.json())
-				.then((responseJson) => {
-					this.setState({
-						amount: responseJson[0]['amount']
-					})
-			});
-			this.setState({
-				editProfile: false,
-				typeLocation: 'main',
-				textLocation: 'Favoriten',
-				page: 1,
-			}, function() {
-				this.loadDataList(this.state.typeLocation);
-			});
-		}
+		fetch('https://meningococcal-distr.000webhostapp.com/total_fav.php?usr_id='+this.state.usr_id)
+			.then((response) => response.json())
+			.then((responseJson) => {
+				this.setState({
+					amount: responseJson[0]['amount'],
+				})
+		});
+		this.setState({
+			editProfile: false,
+			typeLocation: 'favorites',
+			page: 1,
+		}, function() {
+			this.loadDataList(this.state.typeLocation);
+		});
 	}
 	
 	pressEditProfile = () => {
@@ -680,6 +661,14 @@ export default class App extends React.Component {
 	cancel_change = () => {
 		this.setState({
 			editProfile: false,
+		});
+	}
+	
+	pressHome = () => {
+		this.setState({
+			typeLocation: 'main',
+		}, function() {
+			this.loadDataList(this.state.typeLocation);
 		});
 	}
 	
@@ -754,7 +743,13 @@ export default class App extends React.Component {
 		}
 		return (<View>
 					<ScrollView style={styles.wrapper} stickyHeaderIndices={[1]} ref="_scrollView">
-						<View style={styles.header}>
+						<View 
+							style={styles.header} 
+							onLayout={(event) => {
+							  var {x, y, width, height} = event.nativeEvent.layout;
+							  var heightHeader = height;
+							  this.setState({heightHeader: height});
+							}}>
 							<Image
 								style={styles.headerImg}
 							  source={require('./img/sea-beach-holiday-vacation.jpg')}
@@ -766,10 +761,59 @@ export default class App extends React.Component {
 									</Text>
 								</TouchableOpacity>
 							</View>
-							<Animated.View style={this.state.showMenu == true ? [styles.userMenuShow, {marginLeft: movingMargin}] : styles.userMenuHide}>
-								<Text style={styles.userMenu} onPress={this.pressEditProfile}>Profil</Text>
-								<Text style={styles.userMenu} onPress={this.pressFavorites}>{this.state.textLocation}</Text>
-								<Text style={styles.userMenu} onPress={this.logout}>Ausloggen</Text>
+							<Animated.View style={this.state.showMenu == true ? [styles.userMenuShow, {height: this.state.heightHeader, marginLeft: movingMargin}] : styles.userMenuHide}>
+								<View style={styles.menuItem}>
+									<View style={styles.userMenuImg}>
+										<Image
+											style={styles.menuItemStyleImg}
+											source={require('./img/icons8-user-64.png')}
+										/>
+									</View>
+									<View style={styles.userMenuTitle}>
+										<Text style={styles.menuItemStyle} onPress={this.pressEditProfile}>
+											Profil
+										</Text>
+									</View>
+								</View>
+								<View style={styles.menuItem}>
+									<View style={styles.userMenuImg}>
+										<Image
+											style={styles.menuItemStyleImg}
+											source={require('./img/icons8-home-64.png')}
+										/>
+									</View>
+									<View style={styles.userMenuTitle}>
+										<Text style={styles.menuItemStyle} onPress={this.pressHome}>
+											Home
+										</Text>
+									</View>
+								</View>
+								<View style={styles.menuItem}>
+									<View style={styles.userMenuImg}>
+										<Image
+											style={styles.menuItemStyleImg}
+											source={require('./img/icons8-star-64.png')}
+										/>
+									</View>
+									<View style={styles.userMenuTitle}>
+										<Text style={styles.menuItemStyle} onPress={this.pressFavorites}>
+											Favoriten
+										</Text>
+									</View>
+								</View>
+								<View style={styles.menuItem}>
+									<View style={styles.userMenuImg}>
+										<Image
+											style={styles.menuItemStyleImg}
+											source={require('./img/icons8-exit-64.png')}
+										/>
+									</View>
+									<View style={styles.userMenuTitle}>
+										<Text style={styles.menuItemStyle} onPress={this.logout}>
+											Ausloggen
+										</Text>
+									</View>
+								</View>
 							</Animated.View>
 						</View>
 						<View style={styles.pagination}>
@@ -827,26 +871,51 @@ const styles = StyleSheet.create({
 	
 	userMenuShow: {
 		position: 'absolute',
-		display: 'flex',
 		top: 0,
 		flex: 1,
 		flexDirection: 'column',
-		alignItems: 'center',
-		height: 300,
-		width: 300,
+		alignItems: 'flex-start',
+		width: 200,
 		backgroundColor: '#0e1111',
-		paddingLeft: 50,
-		paddingRight: 50,
+		paddingLeft: 25,
+		paddingRight: 25,
+		
 	},
 	
 	userMenuHide: {
 		display: 'none',
 	},
 	
-	userMenu: {
-		fontSize: 30,
+	userMenuImg: {
+		flex: 1.5,
+		justifyContent: 'center',
+		height: 52.5,
+		alignItems: 'center',
+	},
+	
+	userMenuTitle: {
+		flex: 3,
+		justifyContent: 'center',
+		height: 52.5,
+		alignItems: 'flex-start',
+	},
+	
+	menuItemStyle: {
+		fontSize: 20,
 		color: '#FFFFFF',
-		marginTop: 40,
+	},
+	
+	menuItemStyleImg: {
+		resizeMode: 'contain',
+		height: 40,
+	},
+	
+	menuItem: {
+		flex: 1,
+		justifyContent: 'center',
+		alignItems: 'flex-start',
+		flexDirection: 'row',
+		height: 62.5,
 	},
 	
 	pagination: {
@@ -854,6 +923,7 @@ const styles = StyleSheet.create({
 		paddingTop: 20,
 		paddingBottom: 20,
 		backgroundColor: '#0e1111',
+		zIndex: 9999,
 	},
   
 	menu: {
