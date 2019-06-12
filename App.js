@@ -411,7 +411,7 @@ export default class App extends React.Component {
 								onPress={() => this.favorite(this.state.usr_id, item.item.articles_id, item.item.favorites_id)}
 							>
 								<Image
-								source={item.item.favorites_id == null ? require('./img/icons8-heart-outline-64.png') : require('./img/icons8-heart-outline-64-full.png')}
+								source={item.item.favorites_id == null ? require('./img/icons8-bookmark-64_delete.png') : require('./img/icons8-bookmark-64.png')}
 							/>
 							</TouchableOpacity>
 							
@@ -504,12 +504,16 @@ export default class App extends React.Component {
 				fetch('https://meningococcal-distr.000webhostapp.com/register.php?usr='+this.state.reg_usr+'&pwd='+this.state.reg_pwd+'&email='+this.state.reg_email)
 					.then((response) => response.json())
 					.then((responseJson) => {
+						this.setState({
+							showRegisterForm: false,
+							showLoginRegisterMenu: true,
+							loading: false,
+							reg_usr: '',
+							reg_pwd: '',
+							reg_pwd_rep: '',
+							reg_email: '',
+						});
 					});
-				this.setState({
-					showRegisterForm: false,
-					showLoginRegisterMenu: true,
-					loading: false,
-				});
 			}
 		}
 	}
@@ -643,7 +647,6 @@ export default class App extends React.Component {
 				})
 		});
 		this.setState({
-			editProfile: false,
 			typeLocation: 'favorites',
 			page: 1,
 		}, function() {
@@ -665,19 +668,32 @@ export default class App extends React.Component {
 	}
 	
 	pressHome = () => {
-		this.setState({
-			typeLocation: 'main',
-		}, function() {
-			this.loadDataList(this.state.typeLocation);
+		fetch('https://meningococcal-distr.000webhostapp.com/total.php')
+			.then((response) => response.json())
+			.then((responseJson) => {
+				this.setState({
+					amount: responseJson[0]['amount'],
+					typeLocation: 'main',
+					page: 1,
+				}, function() {
+					this.loadDataList(this.state.typeLocation);
+				})
 		});
 	}
 	
 	change = () => {
-		if(this.state.edit_usr_pwd != '' && this.state.edit_usr_pwd_rep != '' && this.state.edit_usr_pwd == this.state.edit_usr_pwd_rep && this.state.edit_usr_pwd_old == this.state.pwd) {
-			fetch('https://meningococcal-distr.000webhostapp.com/edit_profile.php?usr='+this.state.edit_usr_email+'&pwd='+this.state.edit_usr_pwd+'&email='+this.state.usr_id)
-				.then((response) => response.json())
-				.then((responseJson) => {
-				});
+		if(this.state.edit_usr_pwd_old == this.state.pwd) {
+			if(this.state.edit_usr_pwd != '' && this.state.edit_usr_pwd_rep != '' && this.state.passwordNotMatch == false && this.state.emailExists == false) {
+				fetch('https://meningococcal-distr.000webhostapp.com/edit_profile.php?id='+this.state.usr_id+'&pwd='+this.state.edit_usr_pwd+'&email='+this.state.edit_usr_email)
+					.then((response) => response.json())
+					.then((responseJson) => {
+					});
+			} else if(this.state.emailExists == false && this.state.edit_usr_pwd == '' && this.state.edit_usr_pwd_rep == '') {
+				fetch('https://meningococcal-distr.000webhostapp.com/edit_profile.php?id='+this.state.usr_id+'&email='+this.state.edit_usr_email)
+					.then((response) => response.json())
+					.then((responseJson) => {
+					});
+			}
 		}
 	}
 	
