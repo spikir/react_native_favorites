@@ -1,6 +1,6 @@
 import React from 'react';
 import { Easing, BackHandler, WebView, TextInput, ScrollView, StyleSheet, View, Text, Image, TouchableOpacity, FlatList, Button, Linking, Animated, Dimensions, Keyboard, UIManager } from 'react-native';
-import { Font, SecureStore } from 'expo';
+import { Font, SecureStore, LinearGradient } from 'expo';
 import FontAwesome, { Icons } from "react-native-fontawesome";
 
 const { State: TextInputState } = TextInput;
@@ -62,14 +62,22 @@ const EditProfileForm = ({states, handleChange, change, cancel_change}) => {
 								<TouchableOpacity
 									onPress={() => {change()}}
 								>
-									<Text style={styles.btn}>Ändern</Text>
+									<LinearGradient
+										colors={['#FB7BA2', '#f2994a', '#f2c94c']}
+										style={styles.gradient_btn}>
+											<Text style={styles.btn}>Ändern</Text>
+									</LinearGradient>
 								</TouchableOpacity>
 							</View>
 							<View style={styles.button_reg}>
 								<TouchableOpacity
 									onPress={() => {cancel_change()}}
 								>
-									<Text style={styles.btn}>Abbrechen</Text>
+								<LinearGradient
+										colors={['#FB7BA2', '#f2994a', '#f2c94c']}
+										style={styles.gradient_btn}>
+											<Text style={styles.btn}>Abbrechen</Text>
+								</LinearGradient>
 								</TouchableOpacity>
 							</View>
 						</View>
@@ -118,7 +126,11 @@ const LoginForm = ({states, handleChange, login, register_form}) => {
 								<TouchableOpacity
 									onPress={() => {login()}}
 								>
-									<Text style={styles.btn}>Anmelden</Text>
+									<LinearGradient
+										colors={['#FB7BA2', '#f2994a', '#f2c94c']}
+										style={styles.gradient_btn}>
+											<Text style={styles.btn}>Anmelden</Text>
+									</LinearGradient>
 								</TouchableOpacity>
 							</View>
 							<View style={styles.textReg}>
@@ -207,14 +219,22 @@ const RegisterForm = ({states, handleChange, register, cancel_reg}) => {
 								<TouchableOpacity
 									onPress={() => {register()}}
 								>
-									<Text style={styles.btn}>Registrieren</Text>
+									<LinearGradient
+										colors={['#FB7BA2', '#f2994a', '#f2c94c']}
+										style={styles.gradient_btn}>
+											<Text style={styles.btn}>Registrieren</Text>
+									</LinearGradient>
 								</TouchableOpacity>
 							</View>
 							<View style={styles.button_reg}>
 								<TouchableOpacity
 									onPress={() => {cancel_reg()}}
 								>
-									<Text style={styles.btn}>Abbrechen</Text>
+									<LinearGradient
+										colors={['#FB7BA2', '#f2994a', '#f2c94c']}
+										style={styles.gradient_btn}>
+											<Text style={styles.btn}>Abbrechen</Text>
+									</LinearGradient>
 								</TouchableOpacity>
 							</View>
 						</View>
@@ -1111,17 +1131,20 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 	},
 	
-	btn: {
-		marginTop: 50,
+	gradient_btn: {
 		height: 50,
 		borderRadius: 20,
-		backgroundColor: '#999900',
+		width: 200,
+		marginTop: 50,
+	},
+	
+	btn: {
 		fontSize: 20,
 		padding: 10,
 		justifyContent: 'center',
 		color: '#FFFFFF',
-		width: 200,
-		textAlign: 'center'
+		textAlign: 'center',
+		backgroundColor: 'transparent',
 	},
 	
 	logImg: {
