@@ -499,6 +499,9 @@ export default class App extends React.Component {
 					this.setState({
 						loginFailed: true,
 						loading: false,
+						showLoginRegisterMenu: true,
+						usr: '',
+						pwd: '',
 					});
 				}
 			})
@@ -699,6 +702,7 @@ export default class App extends React.Component {
 	cancel_change = () => {
 		this.setState({
 			editProfile: false,
+			changePwd: false,
 		});
 	}
 	
