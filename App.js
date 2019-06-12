@@ -30,12 +30,15 @@ const EditProfileForm = ({states, handleChange, change, cancel_change}) => {
 								</View>
 								<View style={styles.error}>{states.emailExists ? <Text style={styles.warningReg}>E-Mail ist bereits registriert</Text> : null}</View>
 							</View>	
-						<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 10}}>
-							<Image
-								style={styles.fieldIcon}
-								source={require('./img/icons8-password-50.png')}
-							/>
-							<TextInput placeholder="Altes Passwort" style={styles.field} autoCapitalize={'none'} autoCorrect={false} secureTextEntry={true} value={states.edit_usr_pwd_old} onChange={(event) => {handleChange(event, 'edit_usr_pwd_old')}}></TextInput>
+						<View style={{flexDirection: 'column'}}>
+							<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 10}}>
+								<Image
+									style={styles.fieldIcon}
+									source={require('./img/icons8-password-50.png')}
+								/>
+								<TextInput placeholder="Altes Passwort" style={styles.field} autoCapitalize={'none'} autoCorrect={false} secureTextEntry={true} value={states.edit_usr_pwd_old} onChange={(event) => {handleChange(event, 'edit_usr_pwd_old')}}></TextInput>
+							</View>
+							<View style={styles.error}>{states.changePwd ? <Text style={styles.warningReg}>Passwort ist falsch!</Text> : null}</View>
 						</View>
 						<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 10}}>
 							<Image
@@ -607,6 +610,10 @@ export default class App extends React.Component {
 					passwordNotMatch: true,
 				});
 			}
+		} else if(e == 'edit_usr_pwd_old') {
+			this.setState({
+				changePwd: false,
+			});
 		}
 		let change = {};
 		change[e] = name.nativeEvent.text;
@@ -690,6 +697,10 @@ export default class App extends React.Component {
 	}
 	
 	change = () => {
+		this.setState({
+			loading: true,
+			changePwd: false,
+		});
 		if(this.state.edit_usr_pwd_old == this.state.pwd) {
 			if(this.state.edit_usr_pwd != '' && this.state.edit_usr_pwd_rep != '' && this.state.passwordNotMatch == false && this.state.emailExists == false) {
 				fetch('https://meningococcal-distr.000webhostapp.com/edit_profile.php?id='+this.state.usr_id+'&pwd='+this.state.edit_usr_pwd+'&email='+this.state.edit_usr_email)
@@ -701,6 +712,7 @@ export default class App extends React.Component {
 					edit_usr_pwd_old: '',
 					edit_usr_pwd: '',
 					edit_usr_pwd_rep: '',
+					loading: false,
 				});
 				this.logout();
 			} else if(this.state.emailExists == false && this.state.edit_usr_pwd == '' && this.state.edit_usr_pwd_rep == '') {
@@ -711,8 +723,14 @@ export default class App extends React.Component {
 				this.setState({
 					email: this.state.edit_usr_email,
 					edit_usr_pwd_old: '',
+					loading: false,
 				});
 			}
+		} else {
+			this.setState({
+				changePwd: true,
+				loading: false,
+			});
 		}
 	}
 	
