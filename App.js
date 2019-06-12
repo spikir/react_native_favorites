@@ -255,6 +255,8 @@ export default class App extends React.Component {
 			webView: '',
 			webViewTitle: '',
 			typeLocation: 'main',
+			edit_usr_pwd: '',
+			edit_usr_pwd_rep: '',
 		};
 		
 		this.animatedValue = new Animated.Value(0);
@@ -303,7 +305,6 @@ export default class App extends React.Component {
 				});	
 			}
 		});
-		this.loadDataList(this.state.typeLocation);
 		BackHandler.addEventListener('hardwareBackPress', this.backHandler);
 		this.animate();
 	}
@@ -349,18 +350,24 @@ export default class App extends React.Component {
 		this.setState({
 			loading: true,
 		});
-		return fetch('https://meningococcal-distr.000webhostapp.com/lists.php?page='+this.state.page+'&type='+type)
+		return fetch('https://meningococcal-distr.000webhostapp.com/lists.php?page='+this.state.page+'&type='+type+'&usr_id='+this.state.usr_id)
 			.then((response) => response.json())
 			.then((responseJson) => {
-				this.setState({
-					isLoading: false,
-					dataSource: responseJson,
-					count: 0,
-					loading: false,
-				}, function() {
-			  // In this block you can do something with new state.
-			  //console.log(this.state.dataSource);
-			});
+				if(responseJson != false) {
+					this.setState({
+						isLoading: false,
+						dataSource: responseJson,
+						count: 0,
+						loading: false,
+					});
+				} else {
+					this.setState({
+						isLoading: false,
+						dataSource: '',
+						count: 0,
+						loading: false,
+					});
+				}
 			})
 			.catch((error) => {
 				console.error(error);
@@ -463,6 +470,7 @@ export default class App extends React.Component {
 					}, function() {
 						SecureStore.setItemAsync('usr', this.state.usr);
 						SecureStore.setItemAsync('pwd', this.state.pwd);
+						this.loadDataList(this.state.typeLocation);
 					});
 				} else {
 					this.setState({
@@ -688,11 +696,22 @@ export default class App extends React.Component {
 					.then((response) => response.json())
 					.then((responseJson) => {
 					});
+				this.setState({
+					email: this.state.edit_usr_email,
+					edit_usr_pwd_old: '',
+					edit_usr_pwd: '',
+					edit_usr_pwd_rep: '',
+				});
+				this.logout();
 			} else if(this.state.emailExists == false && this.state.edit_usr_pwd == '' && this.state.edit_usr_pwd_rep == '') {
-				fetch('https://meningococcal-distr.000webhostapp.com/edit_profile.php?id='+this.state.usr_id+'&email='+this.state.edit_usr_email)
+				fetch('https://meningococcal-distr.000webhostapp.com/edit_profile.php?id='+this.state.usr_id+'&pwd='+this.state.edit_usr_pwd_old+'&email='+this.state.edit_usr_email)
 					.then((response) => response.json())
 					.then((responseJson) => {
 					});
+				this.setState({
+					email: this.state.edit_usr_email,
+					edit_usr_pwd_old: '',
+				});
 			}
 		}
 	}
@@ -757,7 +776,7 @@ export default class App extends React.Component {
 				outputRange: [-300, 0]
 			});
 		}
-		return (<View>
+		return (<View style={styles.main}>
 					<ScrollView style={styles.wrapper} stickyHeaderIndices={[1]} ref="_scrollView">
 						<View 
 							style={styles.header} 
@@ -854,6 +873,11 @@ export default class App extends React.Component {
 }
 
 const styles = StyleSheet.create({
+	main: {
+		backgroundColor: '#0e1111',
+		flex: 1,
+	},
+	
 	container: {
 		flex: 1,
 		height: '100%',
