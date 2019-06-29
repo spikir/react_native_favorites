@@ -2,6 +2,7 @@ import React from 'react';
 import { Easing, BackHandler, WebView, TextInput, ScrollView, StyleSheet, View, Text, Image, TouchableOpacity, FlatList, Button, Linking, Animated, Dimensions, Keyboard, UIManager } from 'react-native';
 import { Font, SecureStore, LinearGradient } from 'expo';
 import FontAwesome, { Icons } from "react-native-fontawesome";
+import { FloatingTitleTextInputField } from './floating_title_text_input_field';
 
 const { State: TextInputState } = TextInput;
 
@@ -94,7 +95,7 @@ const EditProfileForm = ({states, handleChange, change, cancel_change}) => {
 		</View>);
 }
 
-const LoginForm = ({states, handleChange, login, register_form}) => {
+const LoginForm = ({states, handleChange, login, register_form, recover_form, updateMasterState}) => {
 	return (
 		<View style={{flex:1}}>
 			<View style={styles.loginRegisterCont}>
@@ -112,14 +113,14 @@ const LoginForm = ({states, handleChange, login, register_form}) => {
 								style={styles.fieldIcon}
 								source={require('./img/icons8-name-50.png')}
 							/>
-							<TextInput placeholder="Benutzername" style={styles.field} autoCapitalize={'none'} autoCorrect={false} value={states.usr} onChange={(event) => {handleChange(event, 'usr')}}></TextInput>
+							<FloatingTitleTextInputField attrName="usr" title="Benutzername" value={states.usr} updateMasterState = {updateMasterState} pwdField={false} />
 						</View>
 						<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 10}}>
 							<Image
 								style={styles.fieldIcon}
 								source={require('./img/icons8-password-50.png')}
 							/>
-							<TextInput placeholder="Passwort" style={styles.field} autoCapitalize={'none'} autoCorrect={false} secureTextEntry={true} value={states.pwd} onChange={(event) => {handleChange(event, 'pwd')}}></TextInput>
+							<FloatingTitleTextInputField attrName="pwd" title="Passwort" value={states.pwd} updateMasterState = {updateMasterState} pwdField={true} />
 						</View>
 						<View style={styles.button_login}>
 							<View style={styles.button_log}>
@@ -144,7 +145,7 @@ const LoginForm = ({states, handleChange, login, register_form}) => {
 							<View style={styles.textReg}>
 								<Text style={{fontSize: 18, color: '#FFFFFF'}}>Passwort vergessen?</Text>
 								<TouchableOpacity
-									onPress={() => {register_form()}}
+									onPress={() => {recover_form()}}
 								>
 									<Text style={{fontSize: 18, color: '#999900'}}>Konto wiederherstellen</Text>
 								</TouchableOpacity>
@@ -247,6 +248,62 @@ const RegisterForm = ({states, handleChange, register, cancel_reg}) => {
 					style={styles.loadingImg}
 					source={require('./img/transparent-background-loading-3.gif')}
 				/>
+			</View>
+		</View>);
+}	
+	
+const RecoverPasswordForm = ({states, handleChange, recover, cancel_recover}) => {
+	return (
+		<View style={{flex:1}}>
+			<View style={styles.loginRegisterCont}>
+				<View style={styles.logImg}>
+					<Image
+						style={styles.loginRegisterImg}
+					  source={require('./img/adult-beautiful-brunette-1089164.jpg')}
+					/>
+				</View>
+				<View style={styles.loginRegisterMenu}>
+					<View style={styles.border}>
+						<View style={styles.error}>{states.recoverFailed ? <Text style={styles.regTextField}>Email nicht gefunden!</Text> : null}</View>
+						<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+							<Image
+								style={styles.fieldIcon}
+								source={require('./img/icons8-email-50.png')}
+							/>
+							<TextInput placeholder="Email" style={styles.field} autoCapitalize={'none'} autoCorrect={false} value={states.usr} onChange={(event) => {handleChange(event, 'usr')}}></TextInput>
+						</View>
+						<View style={styles.button_login}>
+							<View style={styles.button_log}>
+								<TouchableOpacity
+									onPress={() => {recover()}}
+								>
+									<LinearGradient
+										colors={['#FB7BA2', '#f2994a', '#f2c94c']}
+										style={styles.gradient_btn}>
+											<Text style={styles.btn}>Wiederherstellen</Text>
+									</LinearGradient>
+								</TouchableOpacity>
+							</View>
+							<View style={styles.button_reg}>
+								<TouchableOpacity
+									onPress={() => {cancel_recover()}}
+								>
+									<LinearGradient
+										colors={['#FB7BA2', '#f2994a', '#f2c94c']}
+										style={styles.gradient_btn}>
+											<Text style={styles.btn}>Abbrechen</Text>
+									</LinearGradient>
+								</TouchableOpacity>
+							</View>
+						</View>
+					</View>
+				</View>
+			</View>
+			<View style={states.loading ? styles.loading : styles.notLoading}>
+			<Image 
+				style={styles.loadingImg}
+				source={require('./img/transparent-background-loading-3.gif')}
+			/>
 			</View>
 		</View>);
 }	
@@ -496,6 +553,16 @@ export default class App extends React.Component {
 						this.loadDataList(this.state.typeLocation);
 					});
 				} else {
+					Promise.all([
+						SecureStore.getItemAsync('usr'),
+						SecureStore.getItemAsync('pwd')
+					]).then((responses) => {
+						if(responses[0] != null && responses[1] != null) {
+							SecureStore.deleteItemAsync('usr');
+							SecureStore.deleteItemAsync('pwd');
+							return;
+						}
+					});
 					this.setState({
 						loginFailed: true,
 						loading: false,
@@ -758,6 +825,26 @@ export default class App extends React.Component {
 		}
 	}
 	
+	recover_form = () => {
+		this.setState({
+			showLoginRegisterMenu: false,
+			showRecoverForm: true,
+		});
+	}
+	
+	cancel_recover = () => {
+		this.setState({
+			showRecoverForm: false,
+			showLoginRegisterMenu: true,
+			errorReg: false,
+		});
+	}
+	
+	_updateMasterState = (attrName, value) => {
+		console.log(attrName);
+		this.setState({ [attrName]: value });
+	}
+	
 	render() {
 		if(this.state.webView != '') {
 			return(
@@ -795,7 +882,16 @@ export default class App extends React.Component {
 						states={this.state} 
 						handleChange={this.handleChange}
 						login={this.login} 
-						register_form={this.register_form}/>);
+						register_form={this.register_form}
+						recover_form={this.recover_form}
+						updateMasterState={this._updateMasterState}/>);
+		}
+		if(this.state.showRecoverForm == true) {
+			return (<RecoverPasswordForm 
+						states={this.state} 
+						handleChange={this.handleChange}
+						recover={this.recover_form}
+						cancel_recover={this.cancel_recover}/>);
 		}
 		if(this.state.showRegisterForm == true) {
 			return (<RegisterForm 
@@ -1124,10 +1220,11 @@ const styles = StyleSheet.create({
 		width: 300,
 		borderRadius: 20,
 		height: 50,
-		textAlign: 'center',
 		borderWidth: 2,
 		borderColor: '#D4AF37',
 		fontSize: 20,
+		paddingLeft: 60,
+		paddingRight: 10,
 	},
 	
 	button_login: {
