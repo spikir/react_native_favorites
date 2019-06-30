@@ -6,7 +6,7 @@ import { FloatingTitleTextInputField } from './floating_title_text_input_field';
 
 const { State: TextInputState } = TextInput;
 
-const EditProfileForm = ({states, handleChange, change, cancel_change}) => {
+const EditProfileForm = ({states, updateMasterState, change, cancel_change}) => {
 	const { shift } = states;
 	return (
 		<View style={{flex:1}}>
@@ -27,9 +27,9 @@ const EditProfileForm = ({states, handleChange, change, cancel_change}) => {
 										style={styles.fieldIcon}
 										source={require('./img/icons8-email-50.png')}
 									/>
-									<TextInput placeholder="E-Mail" style={styles.field} autoCapitalize={'none'} autoCorrect={false} value={states.edit_usr_email} onChange={(event) => {handleChange(event, 'edit_usr_email')}}></TextInput>
+									<FloatingTitleTextInputField attrName="edit_usr_email" title="E-Mail" value={states.edit_usr_email} updateMasterState = {updateMasterState} pwdField={false} />
 								</View>
-								<View style={styles.error}>{states.emailExists ? <Text style={styles.warningReg}>E-Mail ist bereits registriert</Text> : null}</View>
+								<View style={styles.error}>{states.emailExists ? <Text style={styles.warningReg}>Diese E-Mail ist bereits registriert</Text> : null}</View>
 							</View>	
 						<View style={{flexDirection: 'column'}}>
 							<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 10}}>
@@ -37,7 +37,7 @@ const EditProfileForm = ({states, handleChange, change, cancel_change}) => {
 									style={styles.fieldIcon}
 									source={require('./img/icons8-password-50.png')}
 								/>
-								<TextInput placeholder="Altes Passwort" style={styles.field} autoCapitalize={'none'} autoCorrect={false} secureTextEntry={true} value={states.edit_usr_pwd_old} onChange={(event) => {handleChange(event, 'edit_usr_pwd_old')}}></TextInput>
+								<FloatingTitleTextInputField attrName="edit_usr_pwd_old" title="Altes Passwort" value={states.edit_usr_pwd_old} updateMasterState = {updateMasterState} pwdField={true} />
 							</View>
 							<View style={styles.error}>{states.changePwd ? <Text style={styles.warningReg}>Passwort ist falsch!</Text> : null}</View>
 						</View>
@@ -46,7 +46,7 @@ const EditProfileForm = ({states, handleChange, change, cancel_change}) => {
 								style={styles.fieldIcon}
 								source={require('./img/icons8-password-50.png')}
 							/>
-							<TextInput placeholder="Neues Passwort" style={styles.field} autoCapitalize={'none'} autoCorrect={false} secureTextEntry={true} value={states.edit_usr_pwd} onChange={(event) => {handleChange(event, 'edit_usr_pwd')}}></TextInput>
+							<FloatingTitleTextInputField attrName="edit_usr_pwd" title="Neues Passwort" value={states.edit_usr_pwd} updateMasterState = {updateMasterState} pwdField={true} />							
 						</View>
 						<View style={{flexDirection: 'column'}}>
 							<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 10}}>
@@ -54,7 +54,7 @@ const EditProfileForm = ({states, handleChange, change, cancel_change}) => {
 									style={styles.fieldIcon}
 									source={require('./img/icons8-password-50.png')}
 								/>
-								<TextInput placeholder="Passwort wiederholen" style={styles.field} autoCapitalize={'none'} autoCorrect={false} secureTextEntry={true} value={states.edit_usr_pwd_rep} onChange={(event) => {handleChange(event, 'edit_usr_pwd_rep')}}></TextInput>
+								<FloatingTitleTextInputField attrName="edit_usr_pwd_rep" title="Passwort wiederholen" value={states.edit_usr_pwd_rep} updateMasterState = {updateMasterState} pwdField={true} />
 							</View>
 							<View style={styles.error}>{states.passwordNotMatch ? <Text style={styles.warningReg}>Passwörter stimmen nicht überrein!</Text> : null}</View>
 						</View>
@@ -95,7 +95,7 @@ const EditProfileForm = ({states, handleChange, change, cancel_change}) => {
 		</View>);
 }
 
-const LoginForm = ({states, handleChange, login, register_form, recover_form, updateMasterState}) => {
+const LoginForm = ({states, updateMasterState, login, register_form, recover_form}) => {
 	return (
 		<View style={{flex:1}}>
 			<View style={styles.loginRegisterCont}>
@@ -163,7 +163,7 @@ const LoginForm = ({states, handleChange, login, register_form, recover_form, up
 		</View>);
 }
 	
-const RegisterForm = ({states, handleChange, register, cancel_reg}) => {
+const RegisterForm = ({states, updateMasterState, register, cancel_reg}) => {
 	const { shift } = states;
 	return (
 		<View style={{flex:1}}>
@@ -184,7 +184,7 @@ const RegisterForm = ({states, handleChange, register, cancel_reg}) => {
 										style={styles.fieldIcon}
 										source={require('./img/icons8-name-50.png')}
 									/>
-									<TextInput placeholder="Benutzername" style={styles.field} autoCapitalize={'none'} autoCorrect={false} value={states.reg_usr} onChange={(event) => {handleChange(event, 'reg_usr')}}></TextInput>
+									<FloatingTitleTextInputField attrName="reg_usr" title="Benutzername" value={states.reg_usr} updateMasterState = {updateMasterState} pwdField={false} />
 								</View>
 								<View style={styles.error}>{states.userExists ? <Text style={styles.warningReg}>Benutzer existiert bereits</Text> : null}</View>
 							</View>	
@@ -193,7 +193,7 @@ const RegisterForm = ({states, handleChange, register, cancel_reg}) => {
 								style={styles.fieldIcon}
 								source={require('./img/icons8-password-50.png')}
 							/>
-							<TextInput placeholder="Passwort" style={styles.field} autoCapitalize={'none'} autoCorrect={false} secureTextEntry={true} value={states.reg_pwd} onChange={(event) => {handleChange(event, 'reg_pwd')}}></TextInput>
+							<FloatingTitleTextInputField attrName="reg_pwd" title="Passwort" value={states.reg_pwd} updateMasterState = {updateMasterState} pwdField={true} />
 						</View>
 						<View style={{flexDirection: 'column'}}>
 							<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 10}}>
@@ -201,7 +201,7 @@ const RegisterForm = ({states, handleChange, register, cancel_reg}) => {
 									style={styles.fieldIcon}
 									source={require('./img/icons8-password-50.png')}
 								/>
-								<TextInput placeholder="Passwort wiederholen" style={styles.field} autoCapitalize={'none'} autoCorrect={false} secureTextEntry={true} value={states.reg_pwd_rep} onChange={(event) => {handleChange(event, 'reg_pwd_rep')}}></TextInput>
+								<FloatingTitleTextInputField attrName="reg_pwd_rep" title="Passwort wiederholen" value={states.reg_pwd_rep} updateMasterState = {updateMasterState} pwdField={true} />
 							</View>
 							<View style={styles.error}>{states.passwordNotMatch ? <Text style={styles.warningReg}>Passwörter stimmen nicht überrein!</Text> : null}</View>
 						</View>
@@ -211,7 +211,7 @@ const RegisterForm = ({states, handleChange, register, cancel_reg}) => {
 									style={styles.fieldIcon}
 									source={require('./img/icons8-email-50.png')}
 								/>
-								<TextInput placeholder="E-Mail" style={styles.field} autoCapitalize={'none'} autoCorrect={false} value={states.reg_email} onChange={(event) => {handleChange(event, 'reg_email')}}></TextInput>
+								<FloatingTitleTextInputField attrName="reg_email" title="E-Mail" value={states.reg_email} updateMasterState = {updateMasterState} pwdField={false} />
 							</View>
 							<View style={styles.error}>{states.emailExists ? <Text style={styles.warningReg}>Dieses E-Mail ist bereits registriert</Text> : null}</View>
 						</View>
@@ -252,7 +252,7 @@ const RegisterForm = ({states, handleChange, register, cancel_reg}) => {
 		</View>);
 }	
 	
-const RecoverPasswordForm = ({states, handleChange, recover, cancel_recover}) => {
+const RecoverPasswordForm = ({states, updateMasterState, recover, cancel_recover}) => {
 	return (
 		<View style={{flex:1}}>
 			<View style={styles.loginRegisterCont}>
@@ -270,7 +270,7 @@ const RecoverPasswordForm = ({states, handleChange, recover, cancel_recover}) =>
 								style={styles.fieldIcon}
 								source={require('./img/icons8-email-50.png')}
 							/>
-							<TextInput placeholder="Email" style={styles.field} autoCapitalize={'none'} autoCorrect={false} value={states.usr} onChange={(event) => {handleChange(event, 'usr')}}></TextInput>
+							<FloatingTitleTextInputField attrName="rec_email" title="E-Mail" value={states.rec_email} updateMasterState = {updateMasterState} pwdField={false} />
 						</View>
 						<View style={styles.button_login}>
 							<View style={styles.button_log}>
@@ -337,6 +337,7 @@ export default class App extends React.Component {
 			typeLocation: 'main',
 			edit_usr_pwd: '',
 			edit_usr_pwd_rep: '',
+			rec_email: '',
 		};
 		
 		this.animatedValue = new Animated.Value(0);
@@ -348,7 +349,6 @@ export default class App extends React.Component {
 		this.onPressLearnMore = this.onPressLearnMore.bind(this);
 		this.login = this.login.bind(this);
 		this.register = this.register.bind(this);
-		this.handleChange = this.handleChange.bind(this);
 		this.backMain = this.backMain.bind(this);
 		this.count = 0;
 		this.loaded = false;
@@ -655,61 +655,6 @@ export default class App extends React.Component {
 		});
 	}
 	
-	handleChange = (name, e) => {
-		if(e == 'reg_usr') {
-			fetch('https://meningococcal-distr.000webhostapp.com/check_username.php?usr='+name.nativeEvent.text)
-				.then((response) => response.json())
-				.then((responseJson) => {
-					if(responseJson == true) {
-						this.setState({
-							userExists: true,
-						});
-						return;
-					} else {
-						this.setState({
-							userExists: false,
-						});
-					}
-			}).catch((error) => {
-				console.error(error);
-			});
-		} else if(e == 'reg_email' || (this.state.email != this.state.edit_usr_email)) {
-			fetch('https://meningococcal-distr.000webhostapp.com/check_email.php?email='+name.nativeEvent.text)
-				.then((response) => response.json())
-				.then((responseJson) => {
-					if(responseJson == true) {
-						this.setState({
-							emailExists: true,
-						});
-						return;
-					} else {
-						this.setState({
-							emailExists: false,
-						});
-					}
-			}).catch((error) => {
-				console.error(error);
-			});
-		} else if(e == 'reg_pwd' || e == 'reg_pwd_rep' || e == 'edit_usr_pwd' || e == 'edit_usr_pwd_rep') {
-			if((this.state.reg_pwd == name.nativeEvent.text || this.state.reg_pwd_rep == name.nativeEvent.text) || (this.state.edit_usr_pwd == name.nativeEvent.text || this.state.edit_usr_pwd_rep == name.nativeEvent.text)) {
-				this.setState({
-					passwordNotMatch: false,
-				});
-			} else {
-				this.setState({
-					passwordNotMatch: true,
-				});
-			}
-		} else if(e == 'edit_usr_pwd_old') {
-			this.setState({
-				changePwd: false,
-			});
-		}
-		let change = {};
-		change[e] = name.nativeEvent.text;
-		this.setState(change);
-	}
-	
 	handleKeyboardDidShow = (event) => {
 		const { height: windowHeight } = Dimensions.get('window');
 		const keyboardHeight = event.endCoordinates.height;
@@ -841,7 +786,55 @@ export default class App extends React.Component {
 	}
 	
 	_updateMasterState = (attrName, value) => {
-		console.log(attrName);
+		if(attrName == 'reg_usr') {
+			fetch('https://meningococcal-distr.000webhostapp.com/check_username.php?usr='+value)
+				.then((response) => response.json())
+				.then((responseJson) => {
+					if(responseJson == true) {
+						this.setState({
+							userExists: true,
+						});
+						return;
+					} else {
+						this.setState({
+							userExists: false,
+						});
+					}
+			}).catch((error) => {
+				console.error(error);
+			});
+		} else if(attrName == 'reg_email' || (this.state.email != this.state.edit_usr_email)) {
+			fetch('https://meningococcal-distr.000webhostapp.com/check_email.php?email='+value)
+				.then((response) => response.json())
+				.then((responseJson) => {
+					if(responseJson == true) {
+						this.setState({
+							emailExists: true,
+						});
+						return;
+					} else {
+						this.setState({
+							emailExists: false,
+						});
+					}
+			}).catch((error) => {
+				console.error(error);
+			});
+		} else if(attrName == 'reg_pwd' || attrName == 'reg_pwd_rep' || attrName == 'edit_usr_pwd' || attrName == 'edit_usr_pwd_rep') {
+			if((this.state.reg_pwd == value || this.state.reg_pwd_rep == value) || (this.state.edit_usr_pwd == value || this.state.edit_usr_pwd_rep == value)) {
+				this.setState({
+					passwordNotMatch: false,
+				});
+			} else {
+				this.setState({
+					passwordNotMatch: true,
+				});
+			}
+		} else if(attrName == 'edit_usr_pwd_old') {
+			this.setState({
+				changePwd: false,
+			});
+		}
 		this.setState({ [attrName]: value });
 	}
 	
@@ -880,30 +873,29 @@ export default class App extends React.Component {
 		if(this.state.showLoginRegisterMenu == true) {
 			return (<LoginForm 
 						states={this.state} 
-						handleChange={this.handleChange}
+						updateMasterState={this._updateMasterState}
 						login={this.login} 
 						register_form={this.register_form}
-						recover_form={this.recover_form}
-						updateMasterState={this._updateMasterState}/>);
+						recover_form={this.recover_form}/>);
 		}
 		if(this.state.showRecoverForm == true) {
 			return (<RecoverPasswordForm 
 						states={this.state} 
-						handleChange={this.handleChange}
+						updateMasterState={this._updateMasterState}
 						recover={this.recover_form}
 						cancel_recover={this.cancel_recover}/>);
 		}
 		if(this.state.showRegisterForm == true) {
 			return (<RegisterForm 
 						states={this.state}
-						handleChange={this.handleChange}
+						updateMasterState={this._updateMasterState}
 						register={this.register}
 						cancel_reg={this.cancel_reg}/>);
 		}
 		if(this.state.editProfile == true) {
 			return (<EditProfileForm 
 						states={this.state} 
-						handleChange={this.handleChange}
+						updateMasterState={this._updateMasterState}
 						change={this.change}
 						cancel_change={this.cancel_change}
 					/>);
