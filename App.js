@@ -335,6 +335,7 @@ export default class App extends React.Component {
 			webView: '',
 			webViewTitle: '',
 			typeLocation: 'main',
+			edit_usr_pwd_old: '',
 			edit_usr_pwd: '',
 			edit_usr_pwd_rep: '',
 			rec_email: '',
@@ -785,6 +786,19 @@ export default class App extends React.Component {
 		});
 	}
 	
+	recover_pwd = () => {
+		this.setState({
+			loading: true,
+		});
+		fetch('https://meningococcal-distr.000webhostapp.com/recover.php.php?email='+this.state.rec_email)
+			.then((response) => response.json())
+			.then((responseJson) => {
+			});
+		this.setState({
+			loading: false,
+		});
+	}
+	
 	_updateMasterState = (attrName, value) => {
 		if(attrName == 'reg_usr') {
 			fetch('https://meningococcal-distr.000webhostapp.com/check_username.php?usr='+value)
@@ -882,7 +896,7 @@ export default class App extends React.Component {
 			return (<RecoverPasswordForm 
 						states={this.state} 
 						updateMasterState={this._updateMasterState}
-						recover={this.recover_form}
+						recover={this.recover_pwd}
 						cancel_recover={this.cancel_recover}/>);
 		}
 		if(this.state.showRegisterForm == true) {
