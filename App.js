@@ -265,12 +265,15 @@ const RecoverPasswordForm = ({states, updateMasterState, recover, cancel_recover
 				<View style={styles.loginRegisterMenu}>
 					<View style={styles.border}>
 						<View style={styles.error}>{states.recoverFailed ? <Text style={styles.regTextField}>Email nicht gefunden!</Text> : null}</View>
-						<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-							<Image
-								style={styles.fieldIcon}
-								source={require('./img/icons8-email-50.png')}
-							/>
-							<FloatingTitleTextInputField attrName="rec_email" title="E-Mail" value={states.rec_email} updateMasterState = {updateMasterState} pwdField={false} />
+						<View style={{flexDirection: 'column'}}>
+							<View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+								<Image
+									style={styles.fieldIcon}
+									source={require('./img/icons8-email-50.png')}
+								/>
+								<FloatingTitleTextInputField attrName="rec_email" title="E-Mail" value={states.rec_email} updateMasterState = {updateMasterState} pwdField={false} />
+							</View>
+							<View style={styles.error}>{states.recoverSuccess ? <Text style={styles.warningReg}>Das neue Passwort wurde verschickt</Text> : null}</View>
 						</View>
 						<View style={styles.button_login}>
 							<View style={styles.button_log}>
@@ -782,7 +785,8 @@ export default class App extends React.Component {
 		this.setState({
 			showRecoverForm: false,
 			showLoginRegisterMenu: true,
-			errorReg: false,
+			recoverSuccess: false,
+			rec_email: '',
 		});
 	}
 	
@@ -790,9 +794,20 @@ export default class App extends React.Component {
 		this.setState({
 			loading: true,
 		});
-		fetch('https://meningococcal-distr.000webhostapp.com/recover.php.php?email='+this.state.rec_email)
+		fetch('https://meningococcal-distr.000webhostapp.com/recover.php?email='+this.state.rec_email)
 			.then((response) => response.json())
 			.then((responseJson) => {
+				if(responseJson == false) {
+					this.setState({
+						recoverFailed: true,
+						recoverSuccess: false,
+					});
+				} else {
+					this.setState({
+						recoverFailed: false,
+						recoverSuccess: true,
+					});
+				}
 			});
 		this.setState({
 			loading: false,
